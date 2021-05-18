@@ -5,9 +5,7 @@ import {
   Text,
   TouchableWithoutFeedback,
   Keyboard,
-  FlatList,
   ScrollView,
-  Touchable,
   TouchableOpacity,
   TextInput,
 } from "react-native";
@@ -21,6 +19,7 @@ export default function SearchScreen({ navigation }) {
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [companyData, setCompanyData] = useState([]);
+  const [companyDataBackUp, setCompanyDataBackUp] = useState([]);
 
   // can put more code here
 
@@ -35,7 +34,6 @@ export default function SearchScreen({ navigation }) {
           return {
             symbol: company.symbol,
             name: company.name,
-            industry: company.sector,
           };
         })
       )
@@ -43,7 +41,7 @@ export default function SearchScreen({ navigation }) {
         (companies) => {
           setIsLoaded(true);
           setCompanyData(companies);
-          console.log(companyData);
+          setCompanyDataBackUp(companies);
         },
         (error) => {
           setIsLoaded(true);
@@ -51,43 +49,54 @@ export default function SearchScreen({ navigation }) {
         }
       );
   }, []);
-  // if (error) {
-  //   return (
-  //     <View>
-  //       <Text>Error: {error.message}</Text>
-  //     </View>
-  //   );
-  // } else if (!isLoaded) {
-  //   return (
-  //     <View>
-  //       <Text>Loading...</Text>
-  //     </View>
-  //   );
-  // } else {
-  return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+  if (error) {
+    return (
       <View>
-        <SearchBar />
-        <ScrollView style={styles.container}>
-          {companyData.map((x) => (
-            <CompanyList {...x} key={x.symbol} />
-          ))}
-        </ScrollView>
+        <Text>Error: {error.message}</Text>
       </View>
-    </TouchableWithoutFeedback>
-  );
+    );
+  } else if (!isLoaded) {
+    return (
+      <View>
+        <Text>Loading...</Text>
+      </View>
+    );
+  } else {
+    return (
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.container}>
+          <SearchCompanyBar
+            setCompanyData={setCompanyData}
+            companyDataBackUp={companyDataBackUp}
+          />
+          <ScrollView>
+            {companyData.map((x) => (
+              <CompanyList
+                data={x}
+                addToWatchlist={addToWatchlist}
+                key={x.symbol}
+              />
+            ))}
+          </ScrollView>
+        </View>
+      </TouchableWithoutFeedback>
+    );
+  }
 }
 
 function CompanyList(props) {
   return (
-    <TouchableOpacity style={styles.company_container} onPress={() => {}}>
-      <Text style={styles.symbol}>{props.symbol}</Text>
-      <Text style={styles.name}>{props.name}</Text>
+    <TouchableOpacity
+      style={styles.companyRow}
+      onPress={() => props.addToWatchlist(props.data.symbol)}
+    >
+      <Text style={styles.symbol}>{props.data.symbol}</Text>
+      <Text style={styles.name}>{props.data.name}</Text>
     </TouchableOpacity>
   );
 }
 
-function SearchBar() {
+function SearchCompanyBar(props) {
   return (
     <View style={styles.searchbar}>
       <Text style={styles.textInputTitle}>
@@ -97,18 +106,40 @@ function SearchBar() {
         <FontAwesome name="search" size={24} color="white" />
         <TextInput
           name="input"
-          style={styles.textInput}
-          onChangetText={(e) => {}}
+          style={styles.textInputBox}
+          onChangeText={(text) =>
+            filterCompanyBySymbol(
+              text,
+              props.setCompanyData,
+              props.companyDataBackUp
+            )
+          }
         />
       </View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  // FixMe: add styles here ...
-  // use scaleSize(x) to adjust sizes for small/large screens
+function filterCompanyBySymbol(input, setCompanyData, companyDataBackUp) {
+  console.log(typeof input);
+  if (input.length === 0) {
+    setCompanyData(companyDataBackUp);
+  } else {
+    const text = input.toLowerCase();
+    const filteredCompany = companyDataBackUp.filter((company) => {
+      return (
+        company.symbol.toLowerCase().includes(text) ||
+        company.name.toLowerCase().includes(text)
+      );
+    });
+    setCompanyData(filteredCompany);
+  }
+}
 
+const styles = StyleSheet.create({
+  container: {
+    paddingTop: scaleSize(5),
+  },
   searchbar: {
     alignItems: "center",
     marginBottom: scaleSize(10),
@@ -116,12 +147,12 @@ const styles = StyleSheet.create({
   textInputTitle: {
     color: "white",
     textAlign: "center",
-    margin: scaleSize(5),
+    margin: scaleSize(8),
   },
   textInputContainer: {
     flexDirection: "row",
   },
-  textInput: {
+  textInputBox: {
     flex: 1,
     borderColor: "white",
     color: "white",
@@ -129,10 +160,11 @@ const styles = StyleSheet.create({
     height: 30,
     marginHorizontal: scaleSize(5),
   },
-  company_container: {
-    borderBottomColor: "white",
+  companyRow: {
+    borderBottomColor: "#F0F8FF",
     borderBottomWidth: 0.5,
     paddingLeft: scaleSize(15),
+    paddingVertical: scaleSize(4),
   },
   symbol: {
     color: "white",

@@ -1,13 +1,11 @@
 import React, { useState, useContext, useEffect } from "react";
+import { Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const StocksContext = React.createContext();
 
 export const StocksProvider = ({ children }) => {
-  const [state, setState] = useState([
-    { Symbol: "IBM", Name: "IBM company" },
-    { Symbol: "Zoom", Name: "Zoom company" },
-  ]);
+  const [state, setState] = useState({ myList: [] });
 
   return (
     <StocksContext.Provider value={[state, setState]}>
@@ -22,12 +20,28 @@ export const useStocksContext = () => {
   // can put more code here
 
   function addToWatchlist(newSymbol) {
-    //FixMe: add the new symbol to the watchlist, save it in useStockContext state and persist to AsyncStorage
+    //check if the symbol already exists in the list
+    if (state.myList.indexOf(newSymbol) !== -1) {
+      Alert.alert("The company is already in the list");
+    } else {
+      setState((x) => {
+        x.myList.push(newSymbol);
+        return x;
+      });
+      AsyncStorage.setItem("@Mylist", JSON.stringify(state));
+      console.log(state);
+      Alert.alert(`The company ${newSymbol} added to the watch list.`);
+    }
   }
 
   let retrieveData = async () => {
     try {
-      const value = await AsyncStorage.getItem("@Log");
+      const value = await AsyncStorage.getItem("@Mylist");
+      console.log("Retrieved Data");
+      console.log(value);
+      if (value !== null) {
+        setState(JSON.parse(value));
+      }
     } catch (error) {}
   };
 

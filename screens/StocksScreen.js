@@ -1,35 +1,65 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View /* include other react-native components here as needed */ } from 'react-native';
-import { useStocksContext } from '../contexts/StocksContext';
-import { scaleSize } from '../constants/Layout';
+import React, { useState, useEffect } from "react";
+import { StyleSheet, View, Text, ScrollView } from "react-native";
+import { useStocksContext } from "../contexts/StocksContext";
+import { scaleSize } from "../constants/Layout";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-
-// FixMe: implement other components and functions used in StocksScreen here (don't just put all the JSX in StocksScreen below)
-
-
-
-
-
-
-
-export default function StocksScreen({route}) {
+export default function StocksScreen({ route }) {
   const { ServerURL, watchList } = useStocksContext();
-  const [state, setState] = useState({ /* FixMe: initial state here */ });
+  const [state, setState] = useState({
+    /* FixMe: initial state here */
+  });
 
   // can put more code here
 
   useEffect(() => {
-    // FixMe: fetch stock data from the server for any new symbols added to the watchlist and save in local StocksScreen state  
+    // FixMe: fetch stock data from the server for any new symbols added to the watchlist and save in local StocksScreen state
   }, [watchList]);
 
   return (
     <View style={styles.container}>
-        {/* FixMe: add children here! */ }
+      <ScrollView>
+        {watchList.myList.map((x) => (
+          <MyList data={x} />
+        ))}
+      </ScrollView>
+      <StockDetail />
+    </View>
+  );
+}
+
+function MyList(props) {
+  return (
+    <View>
+      <Text style={styles.symbol}>{props.data}</Text>
+    </View>
+  );
+}
+
+function StockDetail(props) {
+  return (
+    <View style={styles.stockDetailContainer}>
+      <Text style={styles.stockDetailTitle}>Stock detail</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  // FixMe: add styles here ...
-  // use scaleSize(x) to adjust sizes for small/large screens
-  });
+  container: { height: "100%" },
+  symbol: {
+    color: "white",
+    fontSize: 20,
+    paddingVertical: scaleSize(5),
+  },
+  stockDetailContainer: {
+    borderTopColor: "white",
+    borderTopWidth: 1,
+    height: "30%",
+  },
+  stockDetailTitle: {
+    color: "white",
+    textAlign: "center",
+    paddingVertical: scaleSize(5),
+    fontWeight: "bold",
+  },
+});

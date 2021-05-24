@@ -58,7 +58,7 @@ export default function SearchScreen({ navigation }) {
   } else if (!isLoaded) {
     return (
       <View>
-        <Text>Loading...</Text>
+        <Text style={{ color: "white", textAlign: "center" }}>Loading...</Text>
       </View>
     );
   } else {

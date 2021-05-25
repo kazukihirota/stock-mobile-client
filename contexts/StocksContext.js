@@ -5,7 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const StocksContext = React.createContext();
 
 export const StocksProvider = ({ children }) => {
-  const [state, setState] = useState({ Symbols: [] });
+  const [state, setState] = useState([]);
 
   return (
     <StocksContext.Provider value={[state, setState]}>
@@ -17,17 +17,13 @@ export const StocksProvider = ({ children }) => {
 export const useStocksContext = () => {
   const [state, setState] = useContext(StocksContext);
 
-  // can put more code here
-
   function addToWatchlist(newSymbol) {
     //check if the symbol already exists in the list
-    if (state.Symbols.indexOf(newSymbol) !== -1) {
+    if (state.indexOf(newSymbol) !== -1) {
       Alert.alert("The company is already in the list");
     } else {
-      setState((x) => {
-        const newState = x.Symbols.push(newSymbol);
-        return newState;
-      });
+      setState((oldArray) => [...oldArray, newSymbol]);
+      console.log("new state", state);
       AsyncStorage.setItem("@Mylist", JSON.stringify(state));
       Alert.alert(`The company ${newSymbol} added to the watch list.`);
     }
@@ -36,10 +32,7 @@ export const useStocksContext = () => {
   function deleteItem(symbol) {
     console.log(symbol);
     //delete item from the state
-    setState((x) => {
-      const newState = x.Symbols.filter((item) => item !== symbol);
-      return newState;
-    });
+    setState(state.filter((item) => item !== symbol));
     console.log(state);
     alert("Item deleted!");
   }
@@ -58,7 +51,6 @@ export const useStocksContext = () => {
   useEffect(() => {
     retrieveData();
   }, []);
-
   return {
     ServerURL: "http://131.181.190.87:3001",
     watchList: state,

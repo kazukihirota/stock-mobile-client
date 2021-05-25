@@ -4,35 +4,35 @@ import {
   StyleSheet,
   View,
   KeyboardAvoidingView,
+  Button,
   TouchableOpacity,
   TextInput,
 } from "react-native";
 import { scaleSize } from "../constants/Layout";
-import { useAuthContext } from "../contexts/AuthContext";
+
 const SERVER_URL = "http://localhost:3001";
 
-const LoginScreen = (props) => {
-  const { loginHandler } = useAuthContext();
+function signUp(username, password) {
+  const url = `${SERVER_URL}/users/register`;
 
+  fetch(url, {
+    method: "POST",
+    headers: {
+      accept: "application/json",
+      "Content-type": "application/json",
+    },
+    body: JSON.stringify({ email: username, password: password }),
+  })
+    .then((res) => res.json())
+    .then((res) => {
+      console.log(res);
+      alert("User registered!");
+    });
+}
+
+const SignUpScreen = (props) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
-  function login(username, password) {
-    const url = `${SERVER_URL}/users/login`;
-
-    fetch(url, {
-      method: "POST",
-      headers: {
-        accept: "application/json",
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify({ email: username, password: password }),
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        console.log(res);
-      });
-  }
 
   return (
     <KeyboardAvoidingView
@@ -40,16 +40,16 @@ const LoginScreen = (props) => {
       keyboardVerticalOffset={50}
       style={styles.screen}
     >
-      <Text style={styles.title}>Stock Mobile App</Text>
+      <Text style={styles.title}>User registration</Text>
       <View style={styles.container}>
-        <Text style={styles.parameter}>User name</Text>
+        <Text style={styles.parameter}>Enter your email address</Text>
         <TextInput
           style={styles.input}
           onChangeText={setUsername}
           value={username}
           autoCapitalize="none"
         />
-        <Text style={styles.parameter}>Password</Text>
+        <Text style={styles.parameter}>Enter your Password</Text>
         <TextInput
           style={styles.input}
           onChangeText={setPassword}
@@ -58,29 +58,28 @@ const LoginScreen = (props) => {
         />
 
         <TouchableOpacity
-          style={styles.loginButton}
-          onPress={() => loginHandler(username, password)}
-        >
-          <Text style={styles.buttonText}>Log in</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
           style={styles.signUpButton}
-          onPress={() => {
-            props.navigation.navigate("Sign Up");
-          }}
+          onPress={() => signUp(username, password)}
         >
           <Text style={styles.buttonText}>Sign up</Text>
         </TouchableOpacity>
+
+        <View style={styles.loginButton}>
+          <Text style={styles.loginButtonText}>Have already an account?</Text>
+          <Button
+            onPress={() => props.navigation.navigate("Log In")}
+            title="Log In"
+          />
+        </View>
       </View>
     </KeyboardAvoidingView>
   );
 };
-
 const styles = StyleSheet.create({
   title: {
     fontSize: scaleSize(40),
     fontWeight: "bold",
-    marginBottom: scaleSize(70),
+    marginVertical: scaleSize(70),
     textShadowColor: "grey",
     textShadowOffset: { width: 1, height: 2 },
     textShadowRadius: 0.26,
@@ -89,7 +88,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#edebe6",
     height: "100%",
     flex: 1,
-    justifyContent: "center",
+
     alignItems: "center",
   },
   container: {
@@ -115,16 +114,6 @@ const styles = StyleSheet.create({
     marginBottom: scaleSize(20),
     borderWidth: 1,
   },
-  loginButton: {
-    alignSelf: "center",
-    backgroundColor: "#454343",
-    padding: 10,
-    borderWidth: scaleSize(1),
-    marginBottom: scaleSize(17),
-    shadowColor: "grey",
-    borderRadius: 8,
-    width: "100%",
-  },
   signUpButton: {
     alignSelf: "center",
     backgroundColor: "#f24b4b",
@@ -133,11 +122,22 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     width: "100%",
   },
+  loginButton: {
+    marginBottom: scaleSize(10),
+    marginTop: scaleSize(8),
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
   buttonText: {
     color: "white",
     fontWeight: "600",
     textAlign: "center",
     fontSize: scaleSize(15),
   },
+  loginButtonText: {
+    color: "black",
+    fontSize: scaleSize(14),
+  },
 });
-export default LoginScreen;
+export default SignUpScreen;

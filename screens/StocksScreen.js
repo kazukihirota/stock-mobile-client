@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -7,40 +7,38 @@ import {
   ScrollView,
   TouchableOpacity,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
 import { useStocksContext } from "../contexts/StocksContext";
 import { scaleSize } from "../constants/Layout";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import { AntDesign } from "@expo/vector-icons";
 import { LineChart } from "react-native-chart-kit";
 
 //to swipe the element in the watch list
 import Swipeable from "react-native-gesture-handler/Swipeable";
 
 export default function StocksScreen() {
-  const { ServerURL, watchList, deleteItem } = useStocksContext();
-  console.log("watchList:", watchList);
+  const { watchList, deleteItem } = useStocksContext();
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [stockDetail, setStockDetail] = useState("");
 
-  const [state, setState] = useState([
-    { symbol: "IBM", name: "IBM", data: [{ open: 0, close: 0, date: null }] },
-  ]);
+  const [state, setState] = useState([]);
 
+  //fetching data from the server
   useEffect(() => {
     (async () => {
       try {
-        const data = await fetchData(watchList.Symbols);
+        const data = await fetchData(watchList);
         setState(data);
-        console.log(state);
         setIsLoaded(true);
       } catch (err) {
-        setIsLoaded(true);
         setError(error);
+        setIsLoaded(true);
       }
     })();
-  }, [watchList]); //it is triggered when watchList is changed
+  }, []); //it is triggered when watchList is changed
 
   if (error) {
     return (
@@ -50,8 +48,17 @@ export default function StocksScreen() {
     );
   } else if (!isLoaded) {
     return (
-      <View>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" />
         <Text style={{ color: "white", textAlign: "center" }}>Loading...</Text>
+      </View>
+    );
+  } else if (state.length === 0) {
+    return (
+      <View>
+        <Text style={{ color: "white", textAlign: "center" }}>
+          No data to display
+        </Text>
       </View>
     );
   } else {
@@ -129,7 +136,6 @@ function StockDetail(props) {
     return index % 20 == 0;
   });
   const closePrices = props.data[0].data.map((item) => item.close).reverse();
-  console.log(datesNew);
   const dataForGraph = {
     labels: datesNew,
     datasets: [
@@ -145,11 +151,12 @@ function StockDetail(props) {
     >
       <View style={styles.stockDetailHeader}>
         <Text style={styles.stockDetailHeaderText}>Stock detail</Text>
-        <Button
-          color="grey"
-          title="Hide"
+        <TouchableOpacity
+          style={styles.hideButton}
           onPress={() => props.setStockDetail("")}
-        ></Button>
+        >
+          <AntDesign name="close" size={24} color="black" />
+        </TouchableOpacity>
       </View>
       <Text style={styles.stockDetailTitle}>{props.symbol}</Text>
       <View style={styles.stockDetailRow}>
@@ -293,12 +300,12 @@ const styles = StyleSheet.create({
   stockDetailHeader: {
     borderBottomColor: "white",
     borderBottomWidth: scaleSize(1),
+    paddingVertical: scaleSize(5),
     flexDirection: "row",
   },
   stockDetailHeaderText: {
     color: "white",
     textAlign: "center",
-    paddingVertical: scaleSize(5),
     flex: 8,
     alignItems: "center",
     fontWeight: "bold",
@@ -306,9 +313,8 @@ const styles = StyleSheet.create({
     left: "50%",
   },
   hideButton: {
-    color: "white",
-    backgroundColor: "white",
-    flex: 2,
+    flex: 1,
+    alignItems: "flex-end",
   },
   stockDetailTitle: {
     color: "white",

@@ -20,6 +20,7 @@ export default function BottomTabNavigator({ navigation, route }) {
         component={StocksScreen}
         options={{
           title: "Stocks",
+
           tabBarIcon: ({ focused }) => (
             <TabBarIcon focused={focused} name="md-trending-up" />
           ),

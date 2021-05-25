@@ -8,26 +8,25 @@ import {
   ScrollView,
   TouchableOpacity,
   TextInput,
+  ActivityIndicator,
 } from "react-native";
 import { useStocksContext } from "../contexts/StocksContext";
 import { scaleSize } from "../constants/Layout";
 import { FontAwesome } from "@expo/vector-icons";
 
-export default function SearchScreen({ navigation }) {
-  const { ServerURL, addToWatchlist } = useStocksContext(); //passing the function
+export default function SearchScreen() {
+  const { addToWatchlist } = useStocksContext(); //passing the function
   //for error and loading state handling
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [companyData, setCompanyData] = useState([]);
   const [companyDataBackUp, setCompanyDataBackUp] = useState([]);
 
-  // can put more code here
-
-  const companyOvervieURL =
+  const companyOverviewURL =
     "https://financialmodelingprep.com/api/v3/nasdaq_constituent?apikey=a061788633309dc50960045d59051a3a";
   //need to fetch symbol, name, open, close, low, high, volume
   useEffect(() => {
-    fetch(companyOvervieURL)
+    fetch(companyOverviewURL)
       .then((res) => res.json())
       .then((data) =>
         data.map((company) => {
@@ -57,7 +56,8 @@ export default function SearchScreen({ navigation }) {
     );
   } else if (!isLoaded) {
     return (
-      <View>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" />
         <Text style={{ color: "white", textAlign: "center" }}>Loading...</Text>
       </View>
     );

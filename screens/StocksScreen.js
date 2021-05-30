@@ -20,25 +20,44 @@ import Swipeable from "react-native-gesture-handler/Swipeable";
 
 export default function StocksScreen() {
   const { watchList, deleteItem } = useStocksContext();
+
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [stockDetail, setStockDetail] = useState("");
 
-  const [state, setState] = useState([]);
+  const [state, setState] = useState([
+    // {
+    //   data: [{ open: "", close: "", high: "", low: "", volumes: "", date: "" }],
+    //   symbol: "",
+    // },
+  ]);
 
+  // setIsLoaded(false);
   //fetching data from the server
+  let retrieveStockDatafromServer = async () => {
+    // console.log("watchList:", watchList);
+    const symbolsExist = state.map((obj) => obj.symbol);
+    console.log("symbols in state", symbolsExist);
+    const symbolsToFetch = watchList.filter(
+      (obj) => symbolsExist.indexOf(obj) == -1
+    );
+    console.log("Symbols to fetch", symbolsToFetch);
+    try {
+      let data = await fetchData(symbolsToFetch);
+      // console.log("data", data);
+      setState((oldArray) => {
+        // console.log("old array", oldArray);
+        return [...oldArray, ...data];
+      });
+      setIsLoaded(true);
+    } catch (err) {
+      setError(error);
+      setIsLoaded(true);
+    }
+  };
   useEffect(() => {
-    (async () => {
-      try {
-        const data = await fetchData(watchList);
-        setState(data);
-        setIsLoaded(true);
-      } catch (err) {
-        setError(error);
-        setIsLoaded(true);
-      }
-    })();
-  }, []); //it is triggered when watchList is changed
+    retrieveStockDatafromServer();
+  }, [watchList]);
 
   if (error) {
     return (
@@ -53,7 +72,7 @@ export default function StocksScreen() {
         <Text style={{ color: "white", textAlign: "center" }}>Loading...</Text>
       </View>
     );
-  } else if (state.length === 0) {
+  } else if (watchList.length === 0) {
     return (
       <View>
         <Text style={{ color: "white", textAlign: "center" }}>
@@ -65,7 +84,7 @@ export default function StocksScreen() {
     return (
       <View style={styles.container}>
         <ScrollView>
-          {watchList !== null &&
+          {watchList !== [] &&
             state.map((x) => (
               <MyList
                 symbol={x.symbol}
@@ -74,7 +93,11 @@ export default function StocksScreen() {
                 percent={
                   Math.round((x.data[0].close / x.data[0].open) * 100) / 100
                 }
-                viewStockDetail={() => setStockDetail(x.symbol)}
+                viewStockDetail={() =>
+                  stockDetail === ""
+                    ? setStockDetail(x.symbol)
+                    : setStockDetail("")
+                }
                 handleDelete={() => deleteItem(x.symbol)}
               />
             ))}
@@ -96,6 +119,34 @@ export default function StocksScreen() {
       </View>
     );
   }
+}
+
+async function fetchData(symbols) {
+  const results = [];
+  console.log("fetching company stock detail on stock screen");
+  for (const symbol of symbols) {
+    const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=0EK7KVFSFJRXJO0Z`;
+
+    let res = await fetch(url);
+    let data = await res.json();
+    let dailyData = data["Time Series (Daily)"];
+    let dailyDataArray = Object.entries(dailyData).map((e) => ({
+      [e[0]]: e[1],
+    }));
+    const result = dailyDataArray.map((data) => {
+      return {
+        date: Object.keys(data).toString(),
+        open: Object.values(data)[0]["1. open"],
+        high: Object.values(data)[0]["2. high"],
+        low: Object.values(data)[0]["3. low"],
+        close: Object.values(data)[0]["4. close"],
+        volumes: Object.values(data)[0]["5. volume"],
+      };
+    });
+    console.log("fetched ", symbol);
+    results.push({ symbol: symbol, data: result });
+  }
+  return results;
 }
 
 function MyList(props) {
@@ -145,10 +196,7 @@ function StockDetail(props) {
     ],
   };
   return (
-    <View
-      style={styles.stockDetailContainer}
-      onPress={() => props.viewStockDetail()}
-    >
+    <View style={styles.stockDetailContainer}>
       <View style={styles.stockDetailHeader}>
         <Text style={styles.stockDetailHeaderText}>Stock detail</Text>
         <TouchableOpacity
@@ -216,34 +264,8 @@ function StockDetail(props) {
 //clear async storage for development purpose
 let clearAsync = async () => {
   AsyncStorage.clear();
+  console.log("cleared async storage");
 };
-
-async function fetchData(symbols) {
-  const results = [];
-  console.log("fetching data");
-  for (const symbol of symbols) {
-    const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=0EK7KVFSFJRXJO0Z`;
-
-    let res = await fetch(url);
-    let data = await res.json();
-    let dailyData = data["Time Series (Daily)"];
-    let dailyDataArray = Object.entries(dailyData).map((e) => ({
-      [e[0]]: e[1],
-    }));
-    const result = dailyDataArray.map((data) => {
-      return {
-        date: Object.keys(data).toString(),
-        open: Object.values(data)[0]["1. open"],
-        high: Object.values(data)[0]["2. high"],
-        low: Object.values(data)[0]["3. low"],
-        close: Object.values(data)[0]["4. close"],
-        volumes: Object.values(data)[0]["5. volume"],
-      };
-    });
-    results.push({ symbol: symbol, data: result });
-  }
-  return results;
-}
 
 const styles = StyleSheet.create({
   container: { height: "100%" },

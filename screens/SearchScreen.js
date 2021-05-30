@@ -13,9 +13,11 @@ import {
 import { useStocksContext } from "../contexts/StocksContext";
 import { scaleSize } from "../constants/Layout";
 import { FontAwesome } from "@expo/vector-icons";
+import { useAuthContext } from "../contexts/AuthContext";
 
 export default function SearchScreen() {
   const { addToWatchlist } = useStocksContext(); //passing the function
+  const { user } = useAuthContext();
   //for error and loading state handling
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -106,6 +108,7 @@ function SearchCompanyBar(props) {
         <FontAwesome name="search" size={24} color="white" />
         <TextInput
           name="input"
+          autoCapitalize="none"
           style={styles.textInputBox}
           onChangeText={(text) =>
             filterCompanyBySymbol(

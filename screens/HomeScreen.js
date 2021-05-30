@@ -1,13 +1,5 @@
-import React, { useState, useEffect } from "react";
-import {
-  Platform,
-  StyleSheet,
-  View,
-  StatusBar,
-  Button,
-  ActivityIndicator,
-  Text,
-} from "react-native";
+import React from "react";
+import { Platform, StyleSheet, View, StatusBar, Button } from "react-native";
 import { scaleSize } from "../constants/Layout";
 import { NavigationContainer, DarkTheme } from "@react-navigation/native";
 import BottomTabNavigator from "../navigation/BottomTabNavigator";
@@ -17,23 +9,14 @@ import { useAuthContext } from "../contexts/AuthContext";
 const Stack = createStackNavigator();
 
 const HomeScreen = () => {
-  const { userToken, logoutHandler } = useAuthContext();
+  const { user, logoutHandler } = useAuthContext();
 
-  const [isLoading, setIsLoadin] = useState(false);
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" />
-        <Text style={{ color: "white", textAlign: "center" }}>Loading...</Text>
-      </View>
-    );
-  }
   return (
     <View style={styles.container}>
       {Platform.OS === "ios" && <StatusBar barStyle="default" />}
       <NavigationContainer theme={DarkTheme}>
         <Stack.Navigator>
-          {userToken == null ? (
+          {user.token == null ? (
             <Stack.Screen name="Log in" component={RootStackNavigator} />
           ) : (
             <Stack.Screen

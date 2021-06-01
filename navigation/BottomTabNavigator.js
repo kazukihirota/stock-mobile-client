@@ -6,7 +6,7 @@ import StocksScreen from "../screens/StocksScreen";
 import SearchScreen from "../screens/SearchScreen";
 
 const BottomTab = createBottomTabNavigator();
-const INITIAL_ROUTE_NAME = "Search";
+const INITIAL_ROUTE_NAME = "Stocks";
 
 export default function BottomTabNavigator({ navigation, route }) {
   React.useLayoutEffect(() => {

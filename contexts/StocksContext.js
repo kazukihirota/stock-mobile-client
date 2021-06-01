@@ -1,7 +1,8 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import { Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuthContext } from "./AuthContext";
+import { render } from "react-dom";
 
 const StocksContext = React.createContext();
 
@@ -17,6 +18,7 @@ export const StocksProvider = ({ children }) => {
 
 export const useStocksContext = () => {
   const [state, setState] = useContext(StocksContext);
+  const renderRef = useRef(false);
   const { user } = useAuthContext();
   const userId = user.userId;
   const userToken = user.token;
@@ -28,12 +30,22 @@ export const useStocksContext = () => {
       Alert.alert("The company is already in the list");
     } else {
       setState((oldArray) => [...oldArray, newSymbol]);
-      AsyncStorage.setItem("@Mylist", JSON.stringify(state)); //this here saving old state in the storage
       Alert.alert(`The company ${newSymbol} added to the watch list.`);
-      console.log(state);
       saveDataOnServer(newSymbol);
     }
   }
+  useEffect(() => {
+    if (renderRef.current) {
+      try {
+        AsyncStorage.setItem("@Mylist", JSON.stringify(state));
+        console.log("state in stock context", state);
+      } catch (error) {
+        console.log("Asynstorage error", error.message);
+      }
+    } else {
+      renderRef.current = true;
+    }
+  }, [state]);
 
   //function to save watchlist data on the server
   function saveDataOnServer(symbol) {
@@ -63,6 +75,7 @@ export const useStocksContext = () => {
 
   let retrieveData = async () => {
     try {
+      console.log("\nretrieving data from async storage");
       const value = await AsyncStorage.getItem("@Mylist");
       if (value !== null) {
         setState(JSON.parse(value));

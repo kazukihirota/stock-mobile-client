@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   StyleSheet,
   View,
   Text,
-  Button,
   ScrollView,
   TouchableOpacity,
   Dimensions,
@@ -20,21 +19,16 @@ import Swipeable from "react-native-gesture-handler/Swipeable";
 
 export default function StocksScreen() {
   const { watchList, deleteItem } = useStocksContext();
-
+  const renderRef = useRef(false);
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [stockDetail, setStockDetail] = useState("");
 
-  const [state, setState] = useState([
-    // {
-    //   data: [{ open: "", close: "", high: "", low: "", volumes: "", date: "" }],
-    //   symbol: "",
-    // },
-  ]);
+  const [state, setState] = useState([]);
 
-  // setIsLoaded(false);
   //fetching data from the server
   let retrieveStockDatafromServer = async () => {
+    setError(null);
     // console.log("watchList:", watchList);
     const symbolsExist = state.map((obj) => obj.symbol);
     console.log("symbols in state", symbolsExist);
@@ -43,26 +37,46 @@ export default function StocksScreen() {
     );
     console.log("Symbols to fetch", symbolsToFetch);
     try {
+      console.log("trying to fetch...");
       let data = await fetchData(symbolsToFetch);
-      // console.log("data", data);
+      console.log(
+        "fetched data",
+        data.map((obj) => obj.symbol)
+      );
       setState((oldArray) => {
+        //removing duplicate data
+        // const filteredData = data.filter(
+        //   (obj) => symbolsExist.indexOf(obj.symbol) == -1
+        // );
         // console.log("old array", oldArray);
         return [...oldArray, ...data];
       });
       setIsLoaded(true);
-    } catch (err) {
+    } catch (error) {
       setError(error);
       setIsLoaded(true);
     }
   };
+
   useEffect(() => {
-    retrieveStockDatafromServer();
+    if (renderRef.current) {
+      retrieveStockDatafromServer();
+    } else {
+      renderRef.current = true;
+    }
   }, [watchList]);
 
   if (error) {
     return (
       <View>
-        <Text>Error: {error.message}</Text>
+        <Text style={{ color: "white", textAlign: "center" }}>
+          Error: {error.message}
+        </Text>
+        <TouchableOpacity onPress={() => clearAsync()}>
+          <Text style={{ color: "white", textAlign: "center" }}>
+            Clear storage
+          </Text>
+        </TouchableOpacity>
       </View>
     );
   } else if (!isLoaded) {
@@ -122,31 +136,105 @@ export default function StocksScreen() {
 }
 
 async function fetchData(symbols) {
-  const results = [];
-  console.log("fetching company stock detail on stock screen");
-  for (const symbol of symbols) {
-    const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=0EK7KVFSFJRXJO0Z`;
+  // let promises = [];
+  // console.log("fetching company stock detail on stock screen");
+  // for (let symbol of symbols) {
+  //   promises.push(
+  //     fetch(
+  //       `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=0EK7KVFSFJRXJO0Z`
+  //     )
+  //   );
+  // }
 
-    let res = await fetch(url);
-    let data = await res.json();
-    let dailyData = data["Time Series (Daily)"];
-    let dailyDataArray = Object.entries(dailyData).map((e) => ({
-      [e[0]]: e[1],
-    }));
-    const result = dailyDataArray.map((data) => {
-      return {
-        date: Object.keys(data).toString(),
-        open: Object.values(data)[0]["1. open"],
-        high: Object.values(data)[0]["2. high"],
-        low: Object.values(data)[0]["3. low"],
-        close: Object.values(data)[0]["4. close"],
-        volumes: Object.values(data)[0]["5. volume"],
-      };
-    });
-    console.log("fetched ", symbol);
-    results.push({ symbol: symbol, data: result });
+  // Promise.all(promises).then((res) => console.log(res));
+  // .then((data) => data["Time Series (Daily)"])
+  // .then((dailyData) =>
+  //   Object.entries(dailyData).map((e) => ({
+  //     [e[0]]: e[1],
+  //   }))
+  // )
+  // .then((dailyDataArray) =>
+  //   dailyDataArray.map((data) => {
+  //     return {
+  //       date: Object.keys(data).toString(),
+  //       open: Object.values(data)[0]["1. open"],
+  //       high: Object.values(data)[0]["2. high"],
+  //       low: Object.values(data)[0]["3. low"],
+  //       close: Object.values(data)[0]["4. close"],
+  //       volumes: Object.values(data)[0]["5. volume"],
+  //     };
+  //   })
+  // )
+  // .then((history) => {
+  //   results.push({ symbol: symbol, data: history });
+  //   console.log("fetched ", symbol);
+  // });
+  // for (let symbol of symbols) {
+  //   let url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=0EK7KVFSFJRXJO0Z`;
+
+  //   fetch(url)
+  //     .then((res) => res.json())
+  //     .then((data) => data["Time Series (Daily)"])
+  //     .then((dailyData) =>
+  //       Object.entries(dailyData).map((e) => ({
+  //         [e[0]]: e[1],
+  //       }))
+  //     )
+  //     .then((dailyDataArray) =>
+  //       dailyDataArray.map((data) => {
+  //         return {
+  //           date: Object.keys(data).toString(),
+  //           open: Object.values(data)[0]["1. open"],
+  //           high: Object.values(data)[0]["2. high"],
+  //           low: Object.values(data)[0]["3. low"],
+  //           close: Object.values(data)[0]["4. close"],
+  //           volumes: Object.values(data)[0]["5. volume"],
+  //         };
+  //       })
+  //     )
+  //     .then((history) => {
+  //       results.push({ symbol: symbol, data: history });
+  //       console.log("fetched ", symbol);
+  //     });
+
+  const results = [];
+  try {
+    for (let symbol of symbols) {
+      let url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=0EK7KVFSFJRXJO0Z`;
+
+      let res = await fetch(url);
+      let data = await res.json();
+      let dailyData = data["Time Series (Daily)"];
+      let dailyDataArray = Object.entries(dailyData).map((e) => ({
+        [e[0]]: e[1],
+      }));
+      const result = dailyDataArray.map((data) => {
+        return {
+          date: Object.keys(data).toString(),
+          open: Object.values(data)[0]["1. open"],
+          high: Object.values(data)[0]["2. high"],
+          low: Object.values(data)[0]["3. low"],
+          close: Object.values(data)[0]["4. close"],
+          volumes: Object.values(data)[0]["5. volume"],
+        };
+      });
+      console.log("fetched ", symbol);
+      results.push({ symbol: symbol, data: result });
+      console.log(
+        "results array",
+        results.map((obj) => obj.symbol)
+      );
+    }
+
+    console.log(
+      "results array",
+      results.map((obj) => obj.symbol)
+    );
+    return results;
+  } catch (err) {
+    console.log(err);
+    return results;
   }
-  return results;
 }
 
 function MyList(props) {

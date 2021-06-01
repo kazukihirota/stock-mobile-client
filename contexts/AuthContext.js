@@ -25,6 +25,7 @@ export const useAuthContext = () => {
 
   function loginHandler(username, password) {
     const url = `${SERVER_URL}/users/login`;
+
     fetch(url, {
       method: "POST",
       headers: {
@@ -33,15 +34,28 @@ export const useAuthContext = () => {
       },
       body: JSON.stringify({ email: username, password: password }),
     })
-      .then((res) => res.json())
+      .then((response) => {
+        if (response.status !== 200) {
+          console.log("oops");
+        }
+        return response.json();
+      })
       .then((res) => {
-        setUser({ token: res.token, userId: res.userId });
-        storeData(JSON.stringify(res));
-        console.log("user logged in!");
+        console.log(res);
+        if (res.error === true) {
+          alert(res.message);
+        } else {
+          setUser({ token: res.token, userId: res.userId });
+          console.log("user logged in!");
+          storeUserData(JSON.stringify(res));
+        }
+      })
+      .catch((error) => {
+        console.log("error", error);
       });
   }
 
-  const storeData = async (value) => {
+  const storeUserData = async (value) => {
     try {
       await AsyncStorage.setItem("@loggedIn", value);
     } catch (e) {}

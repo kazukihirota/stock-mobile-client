@@ -9,30 +9,12 @@ import {
 } from "react-native";
 import { scaleSize } from "../constants/Layout";
 import { useAuthContext } from "../contexts/AuthContext";
-const SERVER_URL = "http://localhost:3001";
 
 const LoginScreen = (props) => {
   const { loginHandler } = useAuthContext();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
-  function login(username, password) {
-    const url = `${SERVER_URL}/users/login`;
-
-    fetch(url, {
-      method: "POST",
-      headers: {
-        accept: "application/json",
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify({ email: username, password: password }),
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        console.log(res);
-      });
-  }
 
   return (
     <KeyboardAvoidingView

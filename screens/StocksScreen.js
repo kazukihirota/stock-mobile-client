@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Dimensions,
   ActivityIndicator,
+  SafeAreaView,
 } from "react-native";
 import { useStocksContext } from "../contexts/StocksContext";
 import { scaleSize } from "../constants/Layout";
@@ -16,6 +17,7 @@ import { LineChart } from "react-native-chart-kit";
 
 //to swipe the element in the watch list
 import Swipeable from "react-native-gesture-handler/Swipeable";
+import { FlatList } from "react-native";
 
 export default function StocksScreen() {
   const { watchList, deleteItem } = useStocksContext();
@@ -35,20 +37,13 @@ export default function StocksScreen() {
     const symbolsToFetch = watchList.filter(
       (obj) => symbolsExist.indexOf(obj) == -1
     );
-    console.log("Symbols to fetch", symbolsToFetch);
     try {
-      console.log("trying to fetch...");
       let data = await fetchData(symbolsToFetch);
       console.log(
         "fetched data",
         data.map((obj) => obj.symbol)
       );
       setState((oldArray) => {
-        //removing duplicate data
-        // const filteredData = data.filter(
-        //   (obj) => symbolsExist.indexOf(obj.symbol) == -1
-        // );
-        // console.log("old array", oldArray);
         return [...oldArray, ...data];
       });
       setIsLoaded(true);
@@ -58,8 +53,25 @@ export default function StocksScreen() {
     }
   };
 
+  const handleDelete = (symbol) => {
+    const newState = state.filter((item) => item.symbol !== symbol);
+    console.log(
+      "newState",
+      newState.map((obj) => obj.symbol)
+    );
+    deleteItem(symbol);
+    setState(newState);
+  };
+  useEffect(() => {
+    console.log(
+      "state: ",
+      state.map((obj) => obj.symbol)
+    );
+  }, [state]);
+
   useEffect(() => {
     if (renderRef.current) {
+      //preventing initial rendering
       retrieveStockDatafromServer();
     } else {
       renderRef.current = true;
@@ -79,6 +91,20 @@ export default function StocksScreen() {
         </TouchableOpacity>
       </View>
     );
+  } else if (watchList.length === 0) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text
+          style={{
+            color: "white",
+            textAlign: "center",
+            alignItems: "center",
+          }}
+        >
+          No data to display
+        </Text>
+      </View>
+    );
   } else if (!isLoaded) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -86,36 +112,29 @@ export default function StocksScreen() {
         <Text style={{ color: "white", textAlign: "center" }}>Loading...</Text>
       </View>
     );
-  } else if (watchList.length === 0) {
-    return (
-      <View>
-        <Text style={{ color: "white", textAlign: "center" }}>
-          No data to display
-        </Text>
-      </View>
-    );
   } else {
     return (
-      <View style={styles.container}>
-        <ScrollView>
-          {watchList !== [] &&
-            state.map((x) => (
+      <SafeAreaView style={styles.container}>
+        <FlatList
+          data={state}
+          keyExtractor={(item) => item.symbol}
+          renderItem={({ item, index }) => {
+            return (
               <MyList
-                symbol={x.symbol}
-                key={x.symbol}
-                price={Math.round(x.data[0].close * 100) / 100}
-                percent={
-                  Math.round((x.data[0].close / x.data[0].open) * 100) / 100
-                }
+                symbol={item.symbol}
+                price={Math.round(item.data[0].close * 100) / 100}
+                percent={Math.round(item.data[0].changePercent * 100) / 100}
                 viewStockDetail={() =>
                   stockDetail === ""
-                    ? setStockDetail(x.symbol)
+                    ? setStockDetail(item.symbol)
                     : setStockDetail("")
                 }
-                handleDelete={() => deleteItem(x.symbol)}
+                handleDelete={() => handleDelete(item.symbol)}
               />
-            ))}
-        </ScrollView>
+            );
+          }}
+        />
+
         <TouchableOpacity onPress={() => clearAsync()}>
           <Text style={{ color: "white", textAlign: "center" }}>
             Clear storage
@@ -130,107 +149,59 @@ export default function StocksScreen() {
             setStockDetail={setStockDetail}
           />
         )}
-      </View>
+      </SafeAreaView>
     );
   }
 }
 
 async function fetchData(symbols) {
-  // let promises = [];
-  // console.log("fetching company stock detail on stock screen");
-  // for (let symbol of symbols) {
-  //   promises.push(
-  //     fetch(
-  //       `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=0EK7KVFSFJRXJO0Z`
-  //     )
-  //   );
-  // }
-
-  // Promise.all(promises).then((res) => console.log(res));
-  // .then((data) => data["Time Series (Daily)"])
-  // .then((dailyData) =>
-  //   Object.entries(dailyData).map((e) => ({
-  //     [e[0]]: e[1],
-  //   }))
-  // )
-  // .then((dailyDataArray) =>
-  //   dailyDataArray.map((data) => {
-  //     return {
-  //       date: Object.keys(data).toString(),
-  //       open: Object.values(data)[0]["1. open"],
-  //       high: Object.values(data)[0]["2. high"],
-  //       low: Object.values(data)[0]["3. low"],
-  //       close: Object.values(data)[0]["4. close"],
-  //       volumes: Object.values(data)[0]["5. volume"],
-  //     };
-  //   })
-  // )
-  // .then((history) => {
-  //   results.push({ symbol: symbol, data: history });
-  //   console.log("fetched ", symbol);
-  // });
-  // for (let symbol of symbols) {
-  //   let url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=0EK7KVFSFJRXJO0Z`;
-
-  //   fetch(url)
-  //     .then((res) => res.json())
-  //     .then((data) => data["Time Series (Daily)"])
-  //     .then((dailyData) =>
-  //       Object.entries(dailyData).map((e) => ({
-  //         [e[0]]: e[1],
-  //       }))
-  //     )
-  //     .then((dailyDataArray) =>
-  //       dailyDataArray.map((data) => {
-  //         return {
-  //           date: Object.keys(data).toString(),
-  //           open: Object.values(data)[0]["1. open"],
-  //           high: Object.values(data)[0]["2. high"],
-  //           low: Object.values(data)[0]["3. low"],
-  //           close: Object.values(data)[0]["4. close"],
-  //           volumes: Object.values(data)[0]["5. volume"],
-  //         };
-  //       })
-  //     )
-  //     .then((history) => {
-  //       results.push({ symbol: symbol, data: history });
-  //       console.log("fetched ", symbol);
-  //     });
-
   const results = [];
   try {
     for (let symbol of symbols) {
-      let url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=0EK7KVFSFJRXJO0Z`;
-
+      let url = `https://financialmodelingprep.com/api/v3/historical-price-full/${symbol}?apikey=a061788633309dc50960045d59051a3a`;
       let res = await fetch(url);
       let data = await res.json();
-      let dailyData = data["Time Series (Daily)"];
-      let dailyDataArray = Object.entries(dailyData).map((e) => ({
-        [e[0]]: e[1],
-      }));
-      const result = dailyDataArray.map((data) => {
+      let historical = data.historical.slice(0, 99);
+      let result = historical.map((obj) => {
         return {
-          date: Object.keys(data).toString(),
-          open: Object.values(data)[0]["1. open"],
-          high: Object.values(data)[0]["2. high"],
-          low: Object.values(data)[0]["3. low"],
-          close: Object.values(data)[0]["4. close"],
-          volumes: Object.values(data)[0]["5. volume"],
+          date: obj.date,
+          open: obj.open,
+          high: obj.high,
+          low: obj.low,
+          close: obj.close,
+          volume: obj.volume,
+          changePercent: obj.changePercent,
         };
       });
-      console.log("fetched ", symbol);
       results.push({ symbol: symbol, data: result });
-      console.log(
-        "results array",
-        results.map((obj) => obj.symbol)
-      );
     }
-
-    console.log(
-      "results array",
-      results.map((obj) => obj.symbol)
-    );
     return results;
+    // for (let symbol of symbols) {
+    //   let url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=0EK7KVFSFJRXJO0Z`;
+
+    //   let res = await fetch(url);
+    //   let data = await res.json();
+    //   let dailyData = data["Time Series (Daily)"];
+    //   let dailyDataArray = Object.entries(dailyData).map((e) => ({
+    //     [e[0]]: e[1],
+    //   }));
+    //   const result = dailyDataArray.map((data) => {
+    //     return {
+    //       date: Object.keys(data).toString(),
+    //       open: Object.values(data)[0]["1. open"],
+    //       high: Object.values(data)[0]["2. high"],
+    //       low: Object.values(data)[0]["3. low"],
+    //       close: Object.values(data)[0]["4. close"],
+    //       volumes: Object.values(data)[0]["5. volume"],
+    //     };
+    //   });
+    //   console.log("fetched ", symbol);
+    //   results.push({ symbol: symbol, data: result });
+    //   console.log(
+    //     "results array",
+    //     results.map((obj) => obj.symbol)
+    //   );
+    // }
   } catch (err) {
     console.log(err);
     return results;
@@ -246,7 +217,7 @@ function MyList(props) {
         onPress={() => props.handleDelete()}
       >
         <View style={styles.deleteBox}>
-          <Text style={styles.deleteBoxText}>Delete</Text>
+          <AntDesign name="delete" size={24} color="white" />
         </View>
       </TouchableOpacity>
     );
@@ -260,7 +231,11 @@ function MyList(props) {
       >
         <Text style={styles.symbol}>{props.symbol}</Text>
         <Text style={styles.price}>{props.price}</Text>
-        <View style={styles.percentBox}>
+        <View
+          style={
+            props.percent > 0 ? styles.percentBoxGreen : styles.percentBoxRed
+          }
+        >
           <Text style={styles.percent}>{props.percent} %</Text>
         </View>
       </TouchableOpacity>
@@ -291,7 +266,7 @@ function StockDetail(props) {
           style={styles.hideButton}
           onPress={() => props.setStockDetail("")}
         >
-          <AntDesign name="close" size={24} color="black" />
+          <AntDesign name="close" size={24} color="white" />
         </TouchableOpacity>
       </View>
       <Text style={styles.stockDetailTitle}>{props.symbol}</Text>
@@ -313,7 +288,7 @@ function StockDetail(props) {
       </View>
       <View style={styles.stockDetailRow}>
         <Text style={styles.stockDetailText}>
-          Volume: {props.data[0].data[0].volumes}
+          Volume: {props.data[0].data[0].volume}
         </Text>
       </View>
 
@@ -385,8 +360,14 @@ const styles = StyleSheet.create({
     textAlign: "center",
     paddingVertical: scaleSize(3),
   },
-  percentBox: {
+  percentBoxRed: {
     backgroundColor: "red",
+    borderRadius: 5,
+    marginRight: scaleSize(20),
+    padding: scaleSize(3),
+  },
+  percentBoxGreen: {
+    backgroundColor: "#19e37b",
     borderRadius: 5,
     marginRight: scaleSize(20),
     padding: scaleSize(3),

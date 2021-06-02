@@ -34,12 +34,7 @@ export const useAuthContext = () => {
       },
       body: JSON.stringify({ email: username, password: password }),
     })
-      .then((response) => {
-        if (response.status !== 200) {
-          console.log("oops");
-        }
-        return response.json();
-      })
+      .then((response) => response.json())
       .then((res) => {
         console.log(res);
         if (res.error === true) {
@@ -49,9 +44,6 @@ export const useAuthContext = () => {
           console.log("user logged in!");
           storeUserData(JSON.stringify(res));
         }
-      })
-      .catch((error) => {
-        console.log("error", error);
       });
   }
 

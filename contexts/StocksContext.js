@@ -2,7 +2,6 @@ import React, { useState, useContext, useEffect, useRef } from "react";
 import { Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuthContext } from "./AuthContext";
-import { render } from "react-dom";
 
 const StocksContext = React.createContext();
 
@@ -34,8 +33,10 @@ export const useStocksContext = () => {
       saveDataOnServer(newSymbol);
     }
   }
+  //callback function to save watchlist in the async storage
   useEffect(() => {
     if (renderRef.current) {
+      //preventing setItem when the application initiates
       try {
         AsyncStorage.setItem("@Mylist", JSON.stringify(state));
         console.log("state in stock context", state);
@@ -66,13 +67,31 @@ export const useStocksContext = () => {
   }
 
   function deleteItem(symbol) {
-    console.log(symbol);
+    console.log("delete item:", symbol);
     //delete item from the state
     setState(state.filter((item) => item !== symbol));
-    console.log(state);
-    alert("Item deleted!");
+    //delete Item from the server too
+    deleteItemOnServer(symbol);
   }
 
+  function deleteItemOnServer(symbol) {
+    const url = `${SERVER_URL}/watchlist/delete`;
+    fetch(url, {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "Content-type": "application/json",
+        Authorization: "Bearer " + userToken,
+      },
+      body: JSON.stringify({ userId: userId, symbol: symbol }),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        console.log(res);
+      });
+  }
+
+  //retrieve data when rendered
   let retrieveData = async () => {
     try {
       console.log("\nretrieving data from async storage");

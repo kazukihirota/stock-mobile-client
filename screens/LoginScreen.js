@@ -37,6 +37,7 @@ const LoginScreen = (props) => {
           onChangeText={setPassword}
           value={password}
           autoCapitalize="none"
+          secureTextEntry={true}
         />
 
         <TouchableOpacity

@@ -21,7 +21,7 @@ export const useStocksContext = () => {
   const { user } = useAuthContext();
   const userId = user.userId;
   const userToken = user.token;
-  const SERVER_URL = "http://localhost:3001";
+  const SERVER_URL = "http://172.22.25.193:3001";
 
   function addToWatchlist(newSymbol) {
     //check if the symbol already exists in the list
@@ -38,7 +38,7 @@ export const useStocksContext = () => {
     if (renderRef.current) {
       //preventing setItem when the application initiates
       try {
-        AsyncStorage.setItem("@Mylist", JSON.stringify(state));
+        AsyncStorage.setItem(`MyList${userId}`, JSON.stringify(state));
         console.log("state in stock context", state);
       } catch (error) {
         console.log("Asynstorage error", error.message);
@@ -91,11 +91,22 @@ export const useStocksContext = () => {
       });
   }
 
+  function syncWatchListWithServer() {
+    const url = `${SERVER_URL}/watchlist/sync/${userId}`;
+
+    fetch(url)
+      .then((res) => res.json())
+      .then((obj) => {
+        console.log("fetched watchlist from server", obj);
+        setState(obj.Symbols);
+      });
+  }
+
   //retrieve data when rendered
   let retrieveData = async () => {
     try {
       console.log("\nretrieving data from async storage");
-      const value = await AsyncStorage.getItem("@Mylist");
+      const value = await AsyncStorage.getItem(`MyList${userId}`);
       if (value !== null) {
         setState(JSON.parse(value));
       }
@@ -110,5 +121,6 @@ export const useStocksContext = () => {
     watchList: state,
     addToWatchlist,
     deleteItem,
+    syncWatchListWithServer,
   };
 };

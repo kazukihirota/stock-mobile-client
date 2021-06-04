@@ -6,10 +6,14 @@ import BottomTabNavigator from "../navigation/BottomTabNavigator";
 import { createStackNavigator } from "@react-navigation/stack";
 import RootStackNavigator from "../navigation/RootStackNavigator";
 import { useAuthContext } from "../contexts/AuthContext";
+import { useStocksContext } from "../contexts/StocksContext";
+import { FontAwesome5 } from "@expo/vector-icons";
+import { TouchableOpacity, Text } from "react-native";
 const Stack = createStackNavigator();
 
 const HomeScreen = () => {
   const { user, logoutHandler } = useAuthContext();
+  const { syncWatchListWithServer } = useStocksContext();
 
   return (
     <View style={styles.container}>
@@ -31,6 +35,15 @@ const HomeScreen = () => {
                     style={styles.logoutButton}
                   />
                 ),
+                headerLeft: () => (
+                  <TouchableOpacity
+                    onPress={() => syncWatchListWithServer()}
+                    style={styles.syncButton}
+                  >
+                    <Text style={styles.syncText}>Sync</Text>
+                    <FontAwesome5 name="sync-alt" size={20} color="white" />
+                  </TouchableOpacity>
+                ),
               }}
             />
           )}
@@ -45,6 +58,18 @@ const styles = StyleSheet.create({
   },
   logoutButton: {
     paddingRight: scaleSize(4),
+  },
+  syncButton: {
+    paddingLeft: scaleSize(4),
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
+  },
+  syncText: {
+    color: "white",
+    fontSize: scaleSize(15),
+    paddingRight: scaleSize(6),
   },
 });
 export default HomeScreen;

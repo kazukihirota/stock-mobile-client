@@ -9,28 +9,11 @@ import {
   TextInput,
 } from "react-native";
 import { scaleSize } from "../constants/Layout";
-
-const SERVER_URL = "http://localhost:3001";
-
-function signUp(username, password) {
-  const url = `${SERVER_URL}/users/register`;
-
-  fetch(url, {
-    method: "POST",
-    headers: {
-      accept: "application/json",
-      "Content-type": "application/json",
-    },
-    body: JSON.stringify({ email: username, password: password }),
-  })
-    .then((res) => res.json())
-    .then((res) => {
-      console.log(res);
-      alert("User registered!");
-    });
-}
+import { useAuthContext } from "../contexts/AuthContext";
 
 const SignUpScreen = (props) => {
+  const { signUp } = useAuthContext();
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 

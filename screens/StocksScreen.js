@@ -3,7 +3,6 @@ import {
   StyleSheet,
   View,
   Text,
-  ScrollView,
   TouchableOpacity,
   Dimensions,
   ActivityIndicator,
@@ -84,11 +83,6 @@ export default function StocksScreen() {
         <Text style={{ color: "white", textAlign: "center" }}>
           Error: {error.message}
         </Text>
-        <TouchableOpacity onPress={() => clearAsync()}>
-          <Text style={{ color: "white", textAlign: "center" }}>
-            Clear storage
-          </Text>
-        </TouchableOpacity>
       </View>
     );
   } else if (watchList.length === 0) {
@@ -161,7 +155,7 @@ async function fetchData(symbols) {
       let url = `https://financialmodelingprep.com/api/v3/historical-price-full/${symbol}?apikey=a061788633309dc50960045d59051a3a`;
       let res = await fetch(url);
       let data = await res.json();
-      let historical = data.historical.slice(0, 99);
+      let historical = data.historical.slice(0, 179);
       let result = historical.map((obj) => {
         return {
           date: obj.date,
@@ -176,32 +170,6 @@ async function fetchData(symbols) {
       results.push({ symbol: symbol, data: result });
     }
     return results;
-    // for (let symbol of symbols) {
-    //   let url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=0EK7KVFSFJRXJO0Z`;
-
-    //   let res = await fetch(url);
-    //   let data = await res.json();
-    //   let dailyData = data["Time Series (Daily)"];
-    //   let dailyDataArray = Object.entries(dailyData).map((e) => ({
-    //     [e[0]]: e[1],
-    //   }));
-    //   const result = dailyDataArray.map((data) => {
-    //     return {
-    //       date: Object.keys(data).toString(),
-    //       open: Object.values(data)[0]["1. open"],
-    //       high: Object.values(data)[0]["2. high"],
-    //       low: Object.values(data)[0]["3. low"],
-    //       close: Object.values(data)[0]["4. close"],
-    //       volumes: Object.values(data)[0]["5. volume"],
-    //     };
-    //   });
-    //   console.log("fetched ", symbol);
-    //   results.push({ symbol: symbol, data: result });
-    //   console.log(
-    //     "results array",
-    //     results.map((obj) => obj.symbol)
-    //   );
-    // }
   } catch (err) {
     console.log(err);
     return results;
@@ -245,11 +213,34 @@ function MyList(props) {
 
 //Stock Detail component appears when user select a stock
 function StockDetail(props) {
-  const dates = props.data[0].data.map((item) => item.date).reverse();
+  //days for data to display
+  const [days, setDays] = useState(180);
+
+  const dates = props.data[0].data
+    .map((item) => item.date)
+    .slice(0, days - 1)
+    .reverse();
+
   const datesNew = dates.filter(function (value, index) {
-    return index % 20 == 0;
+    switch (days) {
+      case 7:
+        return index;
+
+      case 30:
+        return index % 6 === 0;
+
+      case 90:
+        return index % 18 === 0;
+
+      case 180:
+        return index % 36 === 0;
+    }
   });
-  const closePrices = props.data[0].data.map((item) => item.close).reverse();
+  const closePrices = props.data[0].data
+    .map((item) => item.close)
+    .slice(0, days - 1)
+    .reverse();
+
   const dataForGraph = {
     labels: datesNew,
     datasets: [
@@ -261,7 +252,7 @@ function StockDetail(props) {
   return (
     <View style={styles.stockDetailContainer}>
       <View style={styles.stockDetailHeader}>
-        <Text style={styles.stockDetailHeaderText}>Stock detail</Text>
+        <Text style={styles.stockDetailHeaderText}>{props.symbol}</Text>
         <TouchableOpacity
           style={styles.hideButton}
           onPress={() => props.setStockDetail("")}
@@ -269,7 +260,6 @@ function StockDetail(props) {
           <AntDesign name="close" size={24} color="white" />
         </TouchableOpacity>
       </View>
-      <Text style={styles.stockDetailTitle}>{props.symbol}</Text>
       <View style={styles.stockDetailRow}>
         <Text style={styles.stockDetailText}>
           Open: {Math.round(props.data[0].data[0].open * 100) / 100}
@@ -280,7 +270,7 @@ function StockDetail(props) {
       </View>
       <View style={styles.stockDetailRow}>
         <Text style={styles.stockDetailText}>
-          High:{Math.round(props.data[0].data[0].high * 100) / 100}
+          High: {Math.round(props.data[0].data[0].high * 100) / 100}
         </Text>
         <Text style={styles.stockDetailText}>
           Low: {Math.round(props.data[0].data[0].low * 100) / 100}
@@ -291,31 +281,63 @@ function StockDetail(props) {
           Volume: {props.data[0].data[0].volume}
         </Text>
       </View>
+      <View style={styles.DaysRow}>
+        <TouchableOpacity
+          style={days === 7 ? styles.selectedDayButton : styles.DayButton}
+          onPress={() => setDays(7)}
+        >
+          <Text style={days === 7 ? styles.selectedDayText : styles.DayText}>
+            1W
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={days === 30 ? styles.selectedDayButton : styles.DayButton}
+          onPress={() => setDays(30)}
+        >
+          <Text style={days === 30 ? styles.selectedDayText : styles.DayText}>
+            1M
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={days === 90 ? styles.selectedDayButton : styles.DayButton}
+          onPress={() => setDays(90)}
+        >
+          <Text style={days === 90 ? styles.selectedDayText : styles.DayText}>
+            3M
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={days === 180 ? styles.selectedDayButton : styles.DayButton}
+          onPress={() => setDays(180)}
+        >
+          <Text style={days === 180 ? styles.selectedDayText : styles.DayText}>
+            6M
+          </Text>
+        </TouchableOpacity>
+      </View>
 
       <View>
         <LineChart
           data={dataForGraph}
           width={Dimensions.get("window").width}
-          height={220}
+          height={scaleSize(200)}
           style={{
             marginVertical: scaleSize(5),
-            borderRadius: 16,
+            borderRadius: 5,
           }}
           yAxisInterval={10}
           chartConfig={{
-            backgroundColor: "#e26a00",
-            backgroundGradientFrom: "#fb8c00",
-            backgroundGradientTo: "#ffa726",
+            backgroundColor: "#222324",
+            fillShadowGradient: "#2cc97b",
+            fillShadowGradientOpacity: 0.5,
             decimalPlaces: 2, // optional, defaults to 2dp
             color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
             labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-            style: {
-              borderRadius: 16,
-            },
+            strokeWidth: "3",
             propsForDots: {
-              r: "2",
+              r: "1",
               strokeWidth: "1",
-              stroke: "#ffa726",
+              stroke: "#21bf70",
             },
           }}
         />
@@ -383,13 +405,12 @@ const styles = StyleSheet.create({
   },
 
   stockDetailContainer: {
-    borderTopColor: "white",
-    borderTopWidth: scaleSize(1),
-    height: "60%",
-    backgroundColor: "#343634",
+    backgroundColor: "#222324",
   },
   stockDetailHeader: {
     borderBottomColor: "white",
+    borderTopColor: "white",
+    borderTopWidth: scaleSize(1),
     borderBottomWidth: scaleSize(1),
     paddingVertical: scaleSize(5),
     flexDirection: "row",
@@ -400,19 +421,14 @@ const styles = StyleSheet.create({
     flex: 8,
     alignItems: "center",
     fontWeight: "bold",
-    fontSize: scaleSize(20),
-    left: "50%",
+    fontSize: scaleSize(25),
+    left: "60%",
   },
   hideButton: {
     flex: 1,
     alignItems: "flex-end",
-  },
-  stockDetailTitle: {
-    color: "white",
-    textAlign: "center",
-    paddingVertical: scaleSize(10),
-    fontWeight: "bold",
-    fontSize: scaleSize(30),
+    justifyContent: "center",
+    paddingRight: scaleSize(5),
   },
   stockDetailRow: {
     flexDirection: "row",
@@ -425,5 +441,37 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: scaleSize(15),
     paddingVertical: scaleSize(6),
+  },
+
+  DaysRow: {
+    flexDirection: "row",
+    paddingHorizontal: scaleSize(20),
+    marginTop: scaleSize(10),
+  },
+  DayButton: {
+    flex: 1,
+    borderColor: "white",
+    borderWidth: scaleSize(1),
+    borderRadius: 3,
+    marginHorizontal: scaleSize(3),
+  },
+  selectedDayButton: {
+    flex: 1,
+    borderColor: "white",
+    backgroundColor: "white",
+    borderWidth: scaleSize(1),
+    borderRadius: 3,
+    marginHorizontal: scaleSize(3),
+  },
+  DayText: {
+    color: "white",
+    textAlign: "center",
+    paddingVertical: scaleSize(5),
+  },
+  selectedDayText: {
+    color: "black",
+    fontWeight: "bold",
+    textAlign: "center",
+    paddingVertical: scaleSize(5),
   },
 });

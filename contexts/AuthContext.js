@@ -14,15 +14,26 @@ export const AuthContextProvider = ({ children }) => {
 };
 
 export const useAuthContext = () => {
-  const SERVER_URL = "http://localhost:3001";
+  const SERVER_URL = "http://172.22.25.193:3001";
   const [user, setUser] = useContext(AuthContext);
 
-  function logoutHandler() {
-    setUser({ token: null, userId: null });
-    AsyncStorage.removeItem("@loggedIn");
-    console.log("logged out!");
-  }
+  function signUp(username, password) {
+    const url = `${SERVER_URL}/users/register`;
 
+    fetch(url, {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({ email: username, password: password }),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        console.log(res);
+        alert("User registered!");
+      });
+  }
   function loginHandler(username, password) {
     const url = `${SERVER_URL}/users/login`;
 
@@ -46,6 +57,11 @@ export const useAuthContext = () => {
         }
       });
   }
+  function logoutHandler() {
+    setUser({ token: null, userId: null });
+    AsyncStorage.removeItem("@loggedIn");
+    console.log("logged out!");
+  }
 
   const storeUserData = async (value) => {
     try {
@@ -67,5 +83,5 @@ export const useAuthContext = () => {
     retrieveAuthData();
   }, []);
 
-  return { user, logoutHandler, loginHandler };
+  return { user, loginHandler, logoutHandler, signUp };
 };

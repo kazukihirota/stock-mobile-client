@@ -39,7 +39,6 @@ export const useStocksContext = () => {
       //preventing setItem when the application initiates
       try {
         AsyncStorage.setItem(`MyList${userId}`, JSON.stringify(state));
-        console.log("state in stock context", state);
       } catch (error) {
         console.log("Asynstorage error", error.message);
       }
@@ -67,7 +66,6 @@ export const useStocksContext = () => {
   }
 
   function deleteItem(symbol) {
-    console.log("delete item:", symbol);
     //delete item from the state
     setState(state.filter((item) => item !== symbol));
     //delete Item from the server too
@@ -93,11 +91,9 @@ export const useStocksContext = () => {
 
   function syncWatchListWithServer() {
     const url = `${SERVER_URL}/watchlist/sync/${userId}`;
-
     fetch(url)
       .then((res) => res.json())
       .then((obj) => {
-        console.log("fetched watchlist from server", obj);
         setState(obj.Symbols);
       });
   }
@@ -109,6 +105,8 @@ export const useStocksContext = () => {
       const value = await AsyncStorage.getItem(`MyList${userId}`);
       if (value !== null) {
         setState(JSON.parse(value));
+      } else {
+        setState([]);
       }
     } catch (error) {}
   };

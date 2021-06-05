@@ -6,6 +6,7 @@ import {
   KeyboardAvoidingView,
   TouchableOpacity,
   TextInput,
+  ImageBackground,
 } from "react-native";
 import { scaleSize } from "../constants/Layout";
 import { useAuthContext } from "../contexts/AuthContext";
@@ -22,59 +23,81 @@ const LoginScreen = (props) => {
       keyboardVerticalOffset={50}
       style={styles.screen}
     >
-      <Text style={styles.title}>Stock Mobile App</Text>
-      <View style={styles.container}>
-        <Text style={styles.parameter}>User name</Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={setUsername}
-          value={username}
-          autoCapitalize="none"
-        />
-        <Text style={styles.parameter}>Password</Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={setPassword}
-          value={password}
-          autoCapitalize="none"
-          secureTextEntry={true}
-        />
+      <ImageBackground
+        source={require("../assets/images/hero.jpg")}
+        style={styles.image}
+        imageStyle={{ opacity: 0.5 }}
+      >
+        <Text style={styles.title}>Stock Up</Text>
+        <Text style={styles.subTitle}>Mobile</Text>
 
-        <TouchableOpacity
-          style={styles.loginButton}
-          onPress={() => loginHandler(username, password)}
-        >
-          <Text style={styles.buttonText}>Log in</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.signUpButton}
-          onPress={() => {
-            props.navigation.navigate("Sign Up");
-          }}
-        >
-          <Text style={styles.buttonText}>Sign up</Text>
-        </TouchableOpacity>
-      </View>
+        <View style={styles.container}>
+          <Text style={styles.parameter}>User name</Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={setUsername}
+            value={username}
+            autoCapitalize="none"
+          />
+          <Text style={styles.parameter}>Password</Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={setPassword}
+            value={password}
+            autoCapitalize="none"
+            secureTextEntry={true}
+          />
+
+          <TouchableOpacity
+            style={styles.loginButton}
+            onPress={() => loginHandler(username, password)}
+          >
+            <Text style={styles.buttonText}>Log in</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.signUpButton}
+            onPress={() => {
+              props.navigation.navigate("Sign Up");
+            }}
+          >
+            <Text style={styles.buttonText}>Sign up</Text>
+          </TouchableOpacity>
+        </View>
+      </ImageBackground>
     </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
-  title: {
-    fontSize: scaleSize(40),
-    fontWeight: "bold",
-    marginBottom: scaleSize(70),
-    textShadowColor: "grey",
-    textShadowOffset: { width: 1, height: 2 },
-    textShadowRadius: 0.26,
-  },
   screen: {
     backgroundColor: "#edebe6",
     height: "100%",
+  },
+  image: {
     flex: 1,
+    resizeMode: "cover",
     justifyContent: "center",
     alignItems: "center",
   },
+  title: {
+    fontSize: scaleSize(60),
+    fontWeight: "bold",
+    color: "white",
+    marginBottom: scaleSize(4),
+    textShadowColor: "black",
+    textShadowOffset: { width: 3, height: 2 },
+    textShadowRadius: 1,
+  },
+  subTitle: {
+    fontSize: scaleSize(40),
+    fontWeight: "bold",
+    color: "white",
+    marginBottom: scaleSize(50),
+    textShadowColor: "black",
+    textShadowOffset: { width: 3, height: 2 },
+    textShadowRadius: 1,
+  },
+
   container: {
     shadowColor: "black",
     shadowOpacity: 0.26,
@@ -104,6 +127,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderWidth: scaleSize(1),
     marginBottom: scaleSize(17),
+    borderColor: "grey",
     shadowColor: "grey",
     borderRadius: 8,
     width: "100%",
@@ -112,6 +136,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     backgroundColor: "#f24b4b",
     padding: 10,
+    borderColor: "grey",
     borderWidth: scaleSize(0.5),
     borderRadius: 8,
     width: "100%",

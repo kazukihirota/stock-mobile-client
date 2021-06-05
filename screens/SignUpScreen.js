@@ -7,6 +7,7 @@ import {
   Button,
   TouchableOpacity,
   TextInput,
+  ImageBackground,
 } from "react-native";
 import { scaleSize } from "../constants/Layout";
 import { useAuthContext } from "../contexts/AuthContext";
@@ -23,56 +24,66 @@ const SignUpScreen = (props) => {
       keyboardVerticalOffset={50}
       style={styles.screen}
     >
-      <Text style={styles.title}>User registration</Text>
-      <View style={styles.container}>
-        <Text style={styles.parameter}>Enter your email address</Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={setUsername}
-          value={username}
-          autoCapitalize="none"
-        />
-        <Text style={styles.parameter}>Enter your Password</Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={setPassword}
-          value={password}
-          autoCapitalize="none"
-        />
-
-        <TouchableOpacity
-          style={styles.signUpButton}
-          onPress={() => signUp(username, password)}
-        >
-          <Text style={styles.buttonText}>Sign up</Text>
-        </TouchableOpacity>
-
-        <View style={styles.loginButton}>
-          <Text style={styles.loginButtonText}>Have already an account?</Text>
-          <Button
-            onPress={() => props.navigation.navigate("Log In")}
-            title="Log In"
+      <ImageBackground
+        source={require("../assets/images/hero.jpg")}
+        style={styles.image}
+        imageStyle={{ opacity: 0.5 }}
+      >
+        <Text style={styles.title}>User registration</Text>
+        <View style={styles.container}>
+          <Text style={styles.parameter}>Enter your email address</Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={setUsername}
+            value={username}
+            autoCapitalize="none"
           />
+          <Text style={styles.parameter}>Enter your Password</Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={setPassword}
+            value={password}
+            autoCapitalize="none"
+          />
+
+          <TouchableOpacity
+            style={styles.signUpButton}
+            onPress={() => signUp(username, password)}
+          >
+            <Text style={styles.buttonText}>Sign up</Text>
+          </TouchableOpacity>
+
+          <View style={styles.loginButton}>
+            <Text style={styles.loginButtonText}>Have already an account?</Text>
+            <Button
+              onPress={() => props.navigation.navigate("Log In")}
+              title="Log In"
+            />
+          </View>
         </View>
-      </View>
+      </ImageBackground>
     </KeyboardAvoidingView>
   );
 };
 const styles = StyleSheet.create({
-  title: {
-    fontSize: scaleSize(40),
-    fontWeight: "bold",
-    marginVertical: scaleSize(70),
-    textShadowColor: "grey",
-    textShadowOffset: { width: 1, height: 2 },
-    textShadowRadius: 0.26,
-  },
   screen: {
     backgroundColor: "#edebe6",
     height: "100%",
+  },
+  image: {
     flex: 1,
-
+    resizeMode: "cover",
     alignItems: "center",
+  },
+  title: {
+    fontSize: scaleSize(40),
+    fontWeight: "bold",
+    color: "white",
+    marginTop: scaleSize(70),
+    marginBottom: scaleSize(80),
+    textShadowColor: "black",
+    textShadowOffset: { width: 3, height: 2 },
+    textShadowRadius: 1,
   },
   container: {
     shadowColor: "black",
@@ -103,6 +114,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderWidth: scaleSize(0.5),
     borderRadius: 8,
+    borderColor: "grey",
     width: "100%",
   },
   loginButton: {

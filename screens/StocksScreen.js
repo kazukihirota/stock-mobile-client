@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import { useStocksContext } from "../contexts/StocksContext";
 import { scaleSize } from "../constants/Layout";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AntDesign } from "@expo/vector-icons";
 import { LineChart } from "react-native-chart-kit";
 
@@ -61,12 +60,6 @@ export default function StocksScreen() {
     deleteItem(symbol);
     setState(newState);
   };
-  useEffect(() => {
-    console.log(
-      "state: ",
-      state.map((obj) => obj.symbol)
-    );
-  }, [state]);
 
   useEffect(() => {
     if (renderRef.current) {
@@ -128,12 +121,6 @@ export default function StocksScreen() {
             );
           }}
         />
-
-        <TouchableOpacity onPress={() => clearAsync()}>
-          <Text style={{ color: "white", textAlign: "center" }}>
-            Clear storage
-          </Text>
-        </TouchableOpacity>
         {stockDetail !== "" && (
           <StockDetail
             symbol={stockDetail}
@@ -148,6 +135,7 @@ export default function StocksScreen() {
   }
 }
 
+//function to fetch data from the server
 async function fetchData(symbols) {
   const results = [];
   try {
@@ -322,7 +310,7 @@ function StockDetail(props) {
           width={Dimensions.get("window").width}
           height={scaleSize(200)}
           style={{
-            marginVertical: scaleSize(5),
+            marginTop: scaleSize(8),
             borderRadius: 5,
           }}
           yAxisInterval={10}
@@ -345,12 +333,6 @@ function StockDetail(props) {
     </View>
   );
 }
-
-//clear async storage for development purpose
-let clearAsync = async () => {
-  AsyncStorage.clear();
-  console.log("cleared async storage");
-};
 
 const styles = StyleSheet.create({
   container: { height: "100%" },
@@ -421,7 +403,7 @@ const styles = StyleSheet.create({
     flex: 8,
     alignItems: "center",
     fontWeight: "bold",
-    fontSize: scaleSize(25),
+    fontSize: scaleSize(30),
     left: "60%",
   },
   hideButton: {

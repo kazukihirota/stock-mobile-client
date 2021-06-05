@@ -31,16 +31,11 @@ export default function StocksScreen() {
     setError(null);
     // console.log("watchList:", watchList);
     const symbolsExist = state.map((obj) => obj.symbol);
-    console.log("symbols in state", symbolsExist);
     const symbolsToFetch = watchList.filter(
       (obj) => symbolsExist.indexOf(obj) == -1
     );
     try {
       let data = await fetchData(symbolsToFetch);
-      console.log(
-        "fetched data",
-        data.map((obj) => obj.symbol)
-      );
       setState((oldArray) => {
         return [...oldArray, ...data];
       });
@@ -53,10 +48,6 @@ export default function StocksScreen() {
 
   const handleDelete = (symbol) => {
     const newState = state.filter((item) => item.symbol !== symbol);
-    console.log(
-      "newState",
-      newState.map((obj) => obj.symbol)
-    );
     deleteItem(symbol);
     setState(newState);
   };
@@ -245,30 +236,10 @@ function StockDetail(props) {
           style={styles.hideButton}
           onPress={() => props.setStockDetail("")}
         >
-          <AntDesign name="close" size={24} color="white" />
+          <AntDesign name="closecircle" size={24} color="grey" />
         </TouchableOpacity>
       </View>
-      <View style={styles.stockDetailRow}>
-        <Text style={styles.stockDetailText}>
-          Open: {Math.round(props.data[0].data[0].open * 100) / 100}
-        </Text>
-        <Text style={styles.stockDetailText}>
-          Close: {Math.round(props.data[0].data[0].close * 100) / 100}
-        </Text>
-      </View>
-      <View style={styles.stockDetailRow}>
-        <Text style={styles.stockDetailText}>
-          High: {Math.round(props.data[0].data[0].high * 100) / 100}
-        </Text>
-        <Text style={styles.stockDetailText}>
-          Low: {Math.round(props.data[0].data[0].low * 100) / 100}
-        </Text>
-      </View>
-      <View style={styles.stockDetailRow}>
-        <Text style={styles.stockDetailText}>
-          Volume: {props.data[0].data[0].volume}
-        </Text>
-      </View>
+
       <View style={styles.DaysRow}>
         <TouchableOpacity
           style={days === 7 ? styles.selectedDayButton : styles.DayButton}
@@ -304,31 +275,51 @@ function StockDetail(props) {
         </TouchableOpacity>
       </View>
 
-      <View>
-        <LineChart
-          data={dataForGraph}
-          width={Dimensions.get("window").width}
-          height={scaleSize(200)}
-          style={{
-            marginTop: scaleSize(8),
-            borderRadius: 5,
-          }}
-          yAxisInterval={10}
-          chartConfig={{
-            backgroundColor: "#222324",
-            fillShadowGradient: "#2cc97b",
-            fillShadowGradientOpacity: 0.5,
-            decimalPlaces: 2, // optional, defaults to 2dp
-            color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-            labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-            strokeWidth: "3",
-            propsForDots: {
-              r: "1",
-              strokeWidth: "1",
-              stroke: "#21bf70",
-            },
-          }}
-        />
+      <LineChart
+        data={dataForGraph}
+        width={Dimensions.get("window").width}
+        height={scaleSize(200)}
+        style={{
+          marginTop: scaleSize(8),
+          borderRadius: 5,
+        }}
+        yAxisInterval={10}
+        chartConfig={{
+          backgroundColor: "#222324",
+          fillShadowGradient: "#2cc97b",
+          fillShadowGradientOpacity: 0.5,
+          decimalPlaces: 2, // optional, defaults to 2dp
+          color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+          labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+          strokeWidth: "3",
+          propsForDots: {
+            r: "1",
+            strokeWidth: "1",
+            stroke: "#21bf70",
+          },
+        }}
+      />
+
+      <View style={styles.stockDetailRow}>
+        <Text style={styles.stockDetailText}>
+          Open: {Math.round(props.data[0].data[0].open * 100) / 100}
+        </Text>
+        <Text style={styles.stockDetailText}>
+          Close: {Math.round(props.data[0].data[0].close * 100) / 100}
+        </Text>
+      </View>
+      <View style={styles.stockDetailRow}>
+        <Text style={styles.stockDetailText}>
+          High: {Math.round(props.data[0].data[0].high * 100) / 100}
+        </Text>
+        <Text style={styles.stockDetailText}>
+          Low: {Math.round(props.data[0].data[0].low * 100) / 100}
+        </Text>
+      </View>
+      <View style={styles.stockDetailRow}>
+        <Text style={styles.stockDetailText}>
+          Volume: {props.data[0].data[0].volume}
+        </Text>
       </View>
     </View>
   );
@@ -390,9 +381,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#222324",
   },
   stockDetailHeader: {
-    borderBottomColor: "white",
     borderTopColor: "white",
     borderTopWidth: scaleSize(1),
+    borderBottomColor: "white",
     borderBottomWidth: scaleSize(1),
     paddingVertical: scaleSize(5),
     flexDirection: "row",
@@ -435,7 +426,7 @@ const styles = StyleSheet.create({
     borderColor: "white",
     borderWidth: scaleSize(1),
     borderRadius: 3,
-    marginHorizontal: scaleSize(3),
+    marginHorizontal: scaleSize(2),
   },
   selectedDayButton: {
     flex: 1,

@@ -28,12 +28,12 @@ const HomeScreen = () => {
               component={BottomTabNavigator}
               options={{
                 headerRight: () => (
-                  <Button
-                    onPress={() => logoutHandler()}
-                    title="Log out"
-                    color="white"
+                  <TouchableOpacity
                     style={styles.logoutButton}
-                  />
+                    onPress={() => logoutHandler()}
+                  >
+                    <Text style={styles.syncText}>Log out</Text>
+                  </TouchableOpacity>
                 ),
                 headerLeft: () => (
                   <TouchableOpacity
@@ -57,10 +57,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   logoutButton: {
-    paddingRight: scaleSize(4),
+    paddingRight: scaleSize(6),
   },
   syncButton: {
-    paddingLeft: scaleSize(4),
+    paddingLeft: scaleSize(6),
     flex: 1,
     flexDirection: "row",
     alignItems: "center",

@@ -26,10 +26,10 @@ export const useStocksContext = () => {
   function addToWatchlist(newSymbol) {
     //check if the symbol already exists in the list
     if (state.indexOf(newSymbol) !== -1) {
-      Alert.alert("The company is already in the list");
+      alert("The company is already in the list");
     } else {
       setState((oldArray) => [...oldArray, newSymbol]);
-      Alert.alert(`The company ${newSymbol} added to the watch list.`);
+      alert(`The company ${newSymbol} added to the watch list.`);
       saveDataOnServer(newSymbol);
     }
   }

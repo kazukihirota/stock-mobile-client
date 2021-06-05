@@ -10,7 +10,10 @@ const INITIAL_ROUTE_NAME = "Stocks";
 
 export default function BottomTabNavigator({ navigation, route }) {
   React.useLayoutEffect(() => {
-    navigation.setOptions({ headerTitle: getHeaderTitle(route) });
+    navigation.setOptions({
+      headerTitle: getHeaderTitle(route),
+      headerTitleAlign: "center",
+    });
   }, [navigation, route]);
 
   return (
@@ -20,7 +23,6 @@ export default function BottomTabNavigator({ navigation, route }) {
         component={StocksScreen}
         options={{
           title: "Stocks",
-
           tabBarIcon: ({ focused }) => (
             <TabBarIcon focused={focused} name="md-trending-up" />
           ),

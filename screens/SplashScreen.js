@@ -3,80 +3,65 @@ import {
   View,
   Text,
   StyleSheet,
+  Image,
   ImageBackground,
   TouchableOpacity,
 } from "react-native";
 import { scaleSize } from "../constants/Layout";
-
+import { Entypo } from "@expo/vector-icons";
 const SplashScreen = ({ navigation }) => {
   return (
     <View style={styles.screen}>
-      <ImageBackground
-        source={require("../assets/images/hero.jpg")}
+      <Image
+        source={require("../assets/images/splashIcon2.png")}
         style={styles.image}
-        imageStyle={{ opacity: 0.8 }}
-      >
-        <Text style={styles.title}>Stock Up</Text>
-        <Text style={styles.subTitle}>Mobile</Text>
-        <Text style={styles.description}>
-          Welcome to the stock up mobile application. This app allows you
-        </Text>
+      />
+      <Text style={styles.description}>
+        View and analyse the stock market in a customisable watchlist
+      </Text>
 
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate("Log In")}
-        >
-          <Text style={styles.buttonText}>Get Started</Text>
-        </TouchableOpacity>
-      </ImageBackground>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate("Log In")}
+      >
+        <Text style={styles.buttonText}>Get Started</Text>
+        <Entypo
+          name="arrow-with-circle-right"
+          size={scaleSize(30)}
+          color="white"
+          style={{ paddingLeft: scaleSize(10) }}
+        />
+      </TouchableOpacity>
     </View>
   );
 };
 const styles = StyleSheet.create({
   screen: {
-    backgroundColor: "#878787",
+    backgroundColor: "#f0f0f0",
     height: "100%",
-  },
-  image: {
     flex: 1,
-    resizeMode: "cover",
     alignItems: "center",
   },
-
-  title: {
-    fontSize: scaleSize(60),
-    fontWeight: "bold",
-    color: "white",
-    marginBottom: scaleSize(4),
-    marginTop: scaleSize(40),
-    textShadowColor: "black",
-    textShadowOffset: { width: 3, height: 2 },
-    textShadowRadius: 1,
-  },
-  subTitle: {
-    fontSize: scaleSize(50),
-    fontWeight: "bold",
-    color: "white",
-    marginBottom: scaleSize(50),
-    textShadowColor: "black",
-    textShadowOffset: { width: 3, height: 2 },
-    textShadowRadius: 1,
+  image: {
+    width: scaleSize(250),
+    height: scaleSize(250),
+    marginTop: scaleSize(70),
+    marginBottom: scaleSize(70),
   },
   description: {
-    fontSize: scaleSize(30),
-    color: "white",
+    fontSize: scaleSize(20),
+    color: "#393939",
     marginBottom: scaleSize(50),
-    textShadowColor: "black",
-    textShadowOffset: { width: 3, height: 2 },
-    textShadowRadius: 1,
-    padding: scaleSize(20),
+    width: "80%",
   },
   button: {
-    alignSelf: "center",
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: "#454343",
     padding: scaleSize(10),
     borderRadius: 3,
     width: "80%",
+    flexDirection: "row",
     shadowColor: "#000",
     shadowOffset: {
       width: 2,

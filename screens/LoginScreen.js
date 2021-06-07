@@ -6,7 +6,7 @@ import {
   KeyboardAvoidingView,
   TouchableOpacity,
   TextInput,
-  ImageBackground,
+  Image,
 } from "react-native";
 import { scaleSize } from "../constants/Layout";
 import { useAuthContext } from "../contexts/AuthContext";
@@ -23,81 +23,69 @@ const LoginScreen = (props) => {
       keyboardVerticalOffset={50}
       style={styles.screen}
     >
-      <ImageBackground
-        source={require("../assets/images/hero.jpg")}
-        style={styles.image}
-        imageStyle={{ opacity: 0.5 }}
-      >
-        <Text style={styles.title}>Stock Up</Text>
-        <Text style={styles.subTitle}>Mobile</Text>
+      <View style={{ flexDirection: "row" }}>
+        <Image
+          source={require("../assets/images/splashIcon2.png")}
+          style={styles.icon}
+        />
+        <Text style={styles.title}>Login</Text>
+      </View>
 
-        <View style={styles.container}>
-          <Text style={styles.parameter}>User name</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={setUsername}
-            value={username}
-            autoCapitalize="none"
-          />
-          <Text style={styles.parameter}>Password</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={setPassword}
-            value={password}
-            autoCapitalize="none"
-            secureTextEntry={true}
-          />
+      <View style={styles.container}>
+        <Text style={styles.parameter}>User name</Text>
+        <TextInput
+          style={styles.input}
+          onChangeText={setUsername}
+          value={username}
+          autoCapitalize="none"
+        />
+        <Text style={styles.parameter}>Password</Text>
+        <TextInput
+          style={styles.input}
+          onChangeText={setPassword}
+          value={password}
+          autoCapitalize="none"
+          secureTextEntry={true}
+        />
 
-          <TouchableOpacity
-            style={styles.loginButton}
-            onPress={() => loginHandler(username, password)}
-          >
-            <Text style={styles.buttonText}>Log in</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.signUpButton}
-            onPress={() => {
-              props.navigation.navigate("Sign Up");
-            }}
-          >
-            <Text style={styles.buttonText}>Sign up</Text>
-          </TouchableOpacity>
-        </View>
-      </ImageBackground>
+        <TouchableOpacity
+          style={styles.loginButton}
+          onPress={() => loginHandler(username, password)}
+        >
+          <Text style={styles.buttonText}>Log in</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.signUpButton}
+          onPress={() => {
+            props.navigation.navigate("Sign Up");
+          }}
+        >
+          <Text style={styles.buttonText}>Sign up</Text>
+        </TouchableOpacity>
+      </View>
     </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   screen: {
-    backgroundColor: "#878787",
+    backgroundColor: "#f0f0f0",
     height: "100%",
-  },
-  image: {
     flex: 1,
-    resizeMode: "cover",
-    justifyContent: "center",
     alignItems: "center",
   },
-  title: {
-    fontSize: scaleSize(60),
-    fontWeight: "bold",
-    color: "white",
-    marginBottom: scaleSize(4),
-    textShadowColor: "black",
-    textShadowOffset: { width: 3, height: 2 },
-    textShadowRadius: 1,
+  icon: {
+    width: scaleSize(50),
+    height: scaleSize(50),
+    marginVertical: scaleSize(70),
   },
-  subTitle: {
+  title: {
     fontSize: scaleSize(40),
     fontWeight: "bold",
-    color: "white",
-    marginBottom: scaleSize(50),
-    textShadowColor: "black",
-    textShadowOffset: { width: 3, height: 2 },
-    textShadowRadius: 1,
+    color: "black",
+    marginVertical: scaleSize(70),
+    paddingLeft: scaleSize(10),
   },
-
   container: {
     shadowColor: "black",
     shadowOpacity: 0.26,
@@ -107,9 +95,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: "white",
     width: "80%",
-    maxWidth: 400,
-    maxHeight: 400,
-    padding: 20,
+    maxWidth: scaleSize(400),
+    maxHeight: scaleSize(400),
+    padding: scaleSize(20),
+    marginTop: scaleSize(10),
   },
   parameter: {
     marginBottom: scaleSize(5),

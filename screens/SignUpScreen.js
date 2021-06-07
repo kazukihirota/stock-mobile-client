@@ -7,7 +7,7 @@ import {
   Button,
   TouchableOpacity,
   TextInput,
-  ImageBackground,
+  Image,
 } from "react-native";
 import { scaleSize } from "../constants/Layout";
 import { useAuthContext } from "../contexts/AuthContext";
@@ -24,70 +24,69 @@ const SignUpScreen = (props) => {
       keyboardVerticalOffset={50}
       style={styles.screen}
     >
-      <ImageBackground
-        source={require("../assets/images/hero.jpg")}
-        style={styles.image}
-        imageStyle={{ opacity: 0.5 }}
-      >
-        <Text style={styles.title}>User registration</Text>
-        <View style={styles.container}>
-          <Text style={styles.parameter}>Enter your email address</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={setUsername}
-            value={username}
-            autoCapitalize="none"
-          />
-          <Text style={styles.parameter}>Enter your Password</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={setPassword}
-            value={password}
-            autoCapitalize="none"
-          />
-          <Text style={styles.description}>
-            *Password must contain at least one Capital letter, and number. The
-            length must be between 8 and 15 characters.
-          </Text>
+      <View style={{ flexDirection: "row" }}>
+        <Image
+          source={require("../assets/images/splashIcon2.png")}
+          style={styles.icon}
+        />
+        <Text style={styles.title}>Sign Up</Text>
+      </View>
+      <View style={styles.container}>
+        <Text style={styles.parameter}>Enter your email address</Text>
+        <TextInput
+          style={styles.input}
+          onChangeText={setUsername}
+          value={username}
+          autoCapitalize="none"
+        />
+        <Text style={styles.parameter}>Enter your Password</Text>
+        <TextInput
+          style={styles.input}
+          onChangeText={setPassword}
+          value={password}
+          autoCapitalize="none"
+        />
+        <Text style={styles.description}>
+          * Password must contain at least one Capital letter, and number. The
+          length must be between 8 and 15 characters.
+        </Text>
 
-          <TouchableOpacity
-            style={styles.signUpButton}
-            onPress={() => signUp(username, password)}
-          >
-            <Text style={styles.buttonText}>Sign up</Text>
-          </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.signUpButton}
+          onPress={() => signUp(username, password)}
+        >
+          <Text style={styles.buttonText}>Sign up</Text>
+        </TouchableOpacity>
 
-          <View style={styles.loginButton}>
-            <Text style={styles.loginButtonText}>Have already an account?</Text>
-            <Button
-              onPress={() => props.navigation.navigate("Log In")}
-              title="Log In"
-            />
-          </View>
+        <View style={styles.loginButton}>
+          <Text style={styles.loginButtonText}>Have already an account?</Text>
+          <Button
+            onPress={() => props.navigation.navigate("Log In")}
+            title="Log In"
+          />
         </View>
-      </ImageBackground>
+      </View>
     </KeyboardAvoidingView>
   );
 };
 const styles = StyleSheet.create({
   screen: {
-    backgroundColor: "#878787",
+    backgroundColor: "#f0f0f0",
     height: "100%",
-  },
-  image: {
-    flex: 1,
-    resizeMode: "cover",
     alignItems: "center",
+    flex: 1,
+  },
+  icon: {
+    width: scaleSize(50),
+    height: scaleSize(50),
+    marginVertical: scaleSize(70),
   },
   title: {
     fontSize: scaleSize(40),
     fontWeight: "bold",
-    color: "white",
-    marginTop: scaleSize(70),
-    marginBottom: scaleSize(80),
-    textShadowColor: "black",
-    textShadowOffset: { width: 3, height: 2 },
-    textShadowRadius: 1,
+    color: "black",
+    marginVertical: scaleSize(70),
+    paddingLeft: scaleSize(10),
   },
   container: {
     shadowColor: "black",
@@ -110,7 +109,8 @@ const styles = StyleSheet.create({
   },
   description: {
     marginBottom: scaleSize(20),
-    fontSize: scaleSize(13),
+    fontSize: scaleSize(11),
+    marginTop: scaleSize(3),
   },
   input: {
     height: scaleSize(30),

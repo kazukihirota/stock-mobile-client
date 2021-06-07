@@ -19,20 +19,34 @@ export const useAuthContext = () => {
 
   function signUp(username, password) {
     const url = `${SERVER_URL}/users/register`;
-
-    fetch(url, {
-      method: "POST",
-      headers: {
-        accept: "application/json",
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify({ email: username, password: password }),
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        console.log(res);
-        alert("User registered!");
-      });
+    //password and username validation
+    if (username == "" || password == "") {
+      alert("username or password cannot be empty");
+    } else if (!username.includes("@")) {
+      alert("Invalid email form");
+    } else if (password.length < 8) {
+      alert("Password length must be at least 8 characters");
+    } else if (password.length > 15) {
+      alert("Password length must not exceed 15 characters");
+    } else if (!password.match(/[A-Z]/g)) {
+      alert("Password must contain at least one capital letter");
+    } else if (!password.match(/[0-9]/g)) {
+      alert("Password must contain at least one number");
+    } else {
+      fetch(url, {
+        method: "POST",
+        headers: {
+          accept: "application/json",
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({ email: username, password: password }),
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          console.log(res);
+          alert("User registered!");
+        });
+    }
   }
   function loginHandler(username, password) {
     const url = `${SERVER_URL}/users/login`;

@@ -45,6 +45,10 @@ const SignUpScreen = (props) => {
             value={password}
             autoCapitalize="none"
           />
+          <Text style={styles.description}>
+            *Password must contain at least one Capital letter, and number. The
+            length must be between 8 and 15 characters.
+          </Text>
 
           <TouchableOpacity
             style={styles.signUpButton}
@@ -67,7 +71,7 @@ const SignUpScreen = (props) => {
 };
 const styles = StyleSheet.create({
   screen: {
-    backgroundColor: "#edebe6",
+    backgroundColor: "#878787",
     height: "100%",
   },
   image: {
@@ -99,13 +103,17 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   parameter: {
+    marginTop: scaleSize(20),
     marginBottom: scaleSize(5),
-    fontSize: scaleSize(13),
+    fontSize: scaleSize(18),
     fontWeight: "500",
+  },
+  description: {
+    marginBottom: scaleSize(20),
+    fontSize: scaleSize(13),
   },
   input: {
     height: scaleSize(30),
-    marginBottom: scaleSize(20),
     borderWidth: 1,
   },
   signUpButton: {
@@ -114,8 +122,17 @@ const styles = StyleSheet.create({
     padding: 10,
     borderWidth: scaleSize(0.5),
     borderRadius: 8,
-    borderColor: "grey",
     width: "100%",
+    borderColor: "grey",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+
+    elevation: 5,
   },
   loginButton: {
     marginBottom: scaleSize(10),

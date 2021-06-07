@@ -7,6 +7,7 @@ import {
   Dimensions,
   ActivityIndicator,
   SafeAreaView,
+  FlatList,
 } from "react-native";
 import { useStocksContext } from "../contexts/StocksContext";
 import { scaleSize } from "../constants/Layout";
@@ -15,7 +16,6 @@ import { LineChart } from "react-native-chart-kit";
 
 //to swipe the element in the watch list
 import Swipeable from "react-native-gesture-handler/Swipeable";
-import { FlatList } from "react-native";
 
 export default function StocksScreen() {
   const { watchList, deleteItem } = useStocksContext();
@@ -112,6 +112,7 @@ export default function StocksScreen() {
             );
           }}
         />
+
         {stockDetail !== "" && (
           <StockDetail
             symbol={stockDetail}

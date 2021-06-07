@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import {
   Text,
   StyleSheet,
@@ -70,7 +70,7 @@ const LoginScreen = (props) => {
 
 const styles = StyleSheet.create({
   screen: {
-    backgroundColor: "#edebe6",
+    backgroundColor: "#878787",
     height: "100%",
   },
   image: {
@@ -127,19 +127,35 @@ const styles = StyleSheet.create({
     padding: 10,
     borderWidth: scaleSize(1),
     marginBottom: scaleSize(17),
-    borderColor: "grey",
-    shadowColor: "grey",
     borderRadius: 8,
     width: "100%",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+
+    elevation: 5,
   },
   signUpButton: {
     alignSelf: "center",
     backgroundColor: "#f24b4b",
     padding: 10,
-    borderColor: "grey",
     borderWidth: scaleSize(0.5),
+    borderColor: "grey",
     borderRadius: 8,
     width: "100%",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+
+    elevation: 5,
   },
   buttonText: {
     color: "white",

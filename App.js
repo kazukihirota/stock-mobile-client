@@ -2,7 +2,7 @@ import React from "react";
 import { StocksProvider } from "./contexts/StocksContext";
 
 import { AuthContextProvider } from "./contexts/AuthContext";
-import HomeScreen from "./screens/HomeScreen";
+import RootStackNavigator from "./navigation/RootStackNavigator";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function App() {
@@ -10,7 +10,7 @@ export default function App() {
     <SafeAreaProvider>
       <AuthContextProvider>
         <StocksProvider>
-          <HomeScreen />
+          <RootStackNavigator />
         </StocksProvider>
       </AuthContextProvider>
     </SafeAreaProvider>

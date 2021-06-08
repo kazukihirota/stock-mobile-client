@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  ImageBackground,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { scaleSize } from "../constants/Layout";
 import { Entypo } from "@expo/vector-icons";
 const SplashScreen = ({ navigation }) => {
@@ -43,8 +36,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   image: {
-    width: scaleSize(250),
-    height: scaleSize(250),
+    width: scaleSize(200),
+    height: scaleSize(200),
     marginTop: scaleSize(70),
     marginBottom: scaleSize(70),
   },

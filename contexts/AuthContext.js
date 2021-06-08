@@ -43,7 +43,6 @@ export const useAuthContext = () => {
       })
         .then((res) => res.json())
         .then((res) => {
-          console.log(res);
           alert("User registered!");
         });
     }
@@ -61,12 +60,10 @@ export const useAuthContext = () => {
     })
       .then((response) => response.json())
       .then((res) => {
-        console.log(res);
         if (res.error === true) {
           alert(res.message);
         } else {
           setUser({ token: res.token, userId: res.userId });
-          console.log("user logged in!");
           storeUserData(JSON.stringify(res));
         }
       });
@@ -74,7 +71,6 @@ export const useAuthContext = () => {
   function logoutHandler() {
     setUser({ token: null, userId: null });
     AsyncStorage.removeItem("@loggedIn");
-    console.log("logged out!");
   }
 
   const storeUserData = async (value) => {

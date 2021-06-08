@@ -1,5 +1,4 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
-import { Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuthContext } from "./AuthContext";
 
@@ -58,11 +57,7 @@ export const useStocksContext = () => {
         Authorization: "Bearer " + userToken,
       },
       body: JSON.stringify({ userId: userId, symbol: symbol }),
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        console.log(res);
-      });
+    }).then((res) => res.json());
   }
 
   function deleteItem(symbol) {
@@ -82,11 +77,7 @@ export const useStocksContext = () => {
         Authorization: "Bearer " + userToken,
       },
       body: JSON.stringify({ userId: userId, symbol: symbol }),
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        console.log(res);
-      });
+    }).then((res) => res.json());
   }
 
   function syncWatchListWithServer() {
@@ -101,7 +92,6 @@ export const useStocksContext = () => {
   //retrieve data when rendered
   let retrieveData = async () => {
     try {
-      console.log("\nretrieving data from async storage");
       const value = await AsyncStorage.getItem(`MyList${userId}`);
       if (value !== null) {
         setState(JSON.parse(value));

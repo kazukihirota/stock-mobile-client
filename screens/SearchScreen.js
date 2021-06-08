@@ -58,7 +58,7 @@ export default function SearchScreen() {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" />
-        <Text style={{ color: "white", textAlign: "center" }}>Loading...</Text>
+        <Text style={styles.textWhite}>Loading...</Text>
       </View>
     );
   } else {
@@ -69,15 +69,19 @@ export default function SearchScreen() {
             setCompanyData={setCompanyData}
             companyDataBackUp={companyDataBackUp}
           />
-          <ScrollView>
-            {companyData.map((x) => (
-              <CompanyList
-                data={x}
-                addToWatchlist={addToWatchlist}
-                key={x.symbol}
-              />
-            ))}
-          </ScrollView>
+          {companyData.length === 0 ? (
+            <Text style={styles.textWhite}>No data to display</Text>
+          ) : (
+            <ScrollView>
+              {companyData.map((x) => (
+                <CompanyList
+                  data={x}
+                  addToWatchlist={addToWatchlist}
+                  key={x.symbol}
+                />
+              ))}
+            </ScrollView>
+          )}
         </View>
       </TouchableWithoutFeedback>
     );
@@ -122,7 +126,6 @@ function SearchCompanyBar(props) {
 }
 
 function filterCompanyBySymbol(input, setCompanyData, companyDataBackUp) {
-  console.log(typeof input);
   if (input.length === 0) {
     setCompanyData(companyDataBackUp);
   } else {
@@ -144,6 +147,11 @@ const styles = StyleSheet.create({
   searchbar: {
     alignItems: "center",
     marginBottom: scaleSize(10),
+  },
+  textWhite: {
+    color: "white",
+    textAlign: "center",
+    fontSize: scaleSize(20),
   },
   textInputTitle: {
     color: "white",

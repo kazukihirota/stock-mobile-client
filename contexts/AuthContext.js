@@ -43,7 +43,7 @@ export const useAuthContext = () => {
       })
         .then((res) => res.json())
         .then((res) => {
-          alert("User registered!");
+          alert(res.message);
         });
     }
   }

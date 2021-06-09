@@ -10,12 +10,6 @@ import {
 } from "react-native";
 import { scaleSize } from "../constants/Layout";
 import { useAuthContext } from "../contexts/AuthContext";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
-const clearStorage = async () => {
-  AsyncStorage.clear();
-  console.log("Async storage cleared!");
-};
 
 const LoginScreen = (props) => {
   const { loginHandler } = useAuthContext();

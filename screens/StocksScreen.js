@@ -196,10 +196,12 @@ function StockDetail(props) {
   //days for data to display
   const [days, setDays] = useState(180);
 
-  const dates = props.data[0].data
-    .map((item) => item.date)
-    .slice(0, days - 1)
-    .reverse();
+  const dates = props.data
+    ? props.data[0].data
+        .map((item) => item.date.replaceAll("-", "/").slice(5))
+        .slice(0, days - 1)
+        .reverse()
+    : null;
 
   const datesNew = dates.filter(function (value, index) {
     switch (days) {
@@ -216,10 +218,12 @@ function StockDetail(props) {
         return index % 36 === 0;
     }
   });
-  const closePrices = props.data[0].data
-    .map((item) => item.close)
-    .slice(0, days - 1)
-    .reverse();
+  const closePrices = props.data
+    ? props.data[0].data
+        .map((item) => item.close)
+        .slice(0, days - 1)
+        .reverse()
+    : null;
 
   const dataForGraph = {
     labels: datesNew,
